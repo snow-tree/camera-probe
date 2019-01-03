@@ -2,7 +2,7 @@
   "name": "onvif-probe-rx",
   "version": "0.0.0-development",
   "description": "Realtime Open Network Video Interface Forum (ONVIF) device discovery",
-  "author": "Patrick Michalina",
+  "author": "Patrick Michalina <patrickmichalina@mac.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,6 +12,15 @@
     "url": "https://github.com/patrickmichalina/onvif-probe-rx/issues"
   },
   "homepage": "https://github.com/patrickmichalina/onvif-probe-rx#readme",
+  "keywords": [
+    "onvif",
+    "camera",
+    "rxjs",
+    "node",
+    "typescript",
+    "udp",
+    "elecctron"
+  ],
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
