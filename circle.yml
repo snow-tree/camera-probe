@@ -28,15 +28,22 @@ jobs:
           root: .
           paths:
             - node_modules
+    semver:
+        <<: *defaults
+        steps:
+        - checkout
+        - run:
+            name: Semantic Release
+            command: node_modules/.bin/semantic-release
 
 workflows:
   version: 2
   build:
     jobs:
       - build
-    #   - semver:
-    #       requires:
-    #         - build
-    #       filters:
-    #         branches:
-    #           only: master
+      - semver:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
