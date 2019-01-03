@@ -16,7 +16,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint -p tsconfig.json",
-    "prepublish": "tsc"
+    "dist": "tsc"
+  },
+  "release": {
+    "pkgRoot": "dist"
   },
   "dependencies": {
     "rxjs": "^6.3.3",

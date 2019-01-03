@@ -20,6 +20,9 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
+      - run:
+          name: Dist
+          command: npm run dist
       - persist_to_workspace:
           root: .
           paths:
@@ -28,13 +31,13 @@ jobs:
           root: .
           paths:
             - node_modules
-    semver:
-        <<: *defaults
-        steps:
-        - checkout
-        - run:
-            name: Semantic Release
-            command: node_modules/.bin/semantic-release
+  semver:
+    <<: *defaults
+      steps:
+      - checkout
+      - run:
+          name: Semantic Release
+          command: node_modules/.bin/semantic-release
 
 workflows:
   version: 2
