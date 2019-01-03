@@ -33,7 +33,7 @@ jobs:
             - node_modules
   semver:
     <<: *defaults
-      steps:
+    steps:
       - checkout
       - run:
           name: Semantic Release
