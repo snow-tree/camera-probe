@@ -1,6 +1,6 @@
 import { timer, Observable } from 'rxjs'
 import { socketStream } from './socket-stream'
-import { maybe, reader } from 'typescript-monads'
+import { maybe, reader, IMaybe } from 'typescript-monads'
 import { map, distinctUntilChanged, scan } from 'rxjs/operators'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
 import { probePayload } from './probe-payload'
@@ -90,17 +90,17 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
             }
           })
       }),
-      scan((acc, curr) => {
+      scan<IMaybe<IONVIFDevice>, ReadonlyArray<IONVIFDevice>>((acc, curr) => {
         const tsNow = Date.now()
         const cleaned = acc.filter((c: any) => c.ts < tsNow)
         return uniqueObjects(curr.match({
           some: (cam: any) => {
-            const { ts, ...noTs  } = cam
+            const { ts, ...noTs } = cam
             return [...cleaned, noTs]
           },
           none: () => [...cleaned]
         }))
-      }, [] as any)
+      }, [])
     )
 })
 
