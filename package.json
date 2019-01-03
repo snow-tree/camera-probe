@@ -1,7 +1,7 @@
 {
   "name": "onvif-probe-rx",
   "version": "1.0.0",
-  "description": "TODO",
+  "description": "Realtime Open Network Video Interface Forum (ONVIF) device discovery",
   "author": "Patrick Michalina",
   "license": "MIT",
   "repository": {

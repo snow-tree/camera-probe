@@ -14,7 +14,7 @@ const uniqueObjects =
   (arr: ReadonlyArray<any>) =>
     arr.filter((object, index) => index === arr.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)))
 
-export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<ReadonlyArray<IONVIFDevice>>>(partialConfig => {
+export const probeONVIFDevices = () => reader<Partial<IProbeConfig> | undefined, Observable<ReadonlyArray<IONVIFDevice>>>(partialConfig => {
   const config: IProbeConfig = { ...DEFAULT_CONFIG, ...partialConfig }
 
   const ss = socketStream()(config.PROBE_NETWORK_TIMEOUT_MS)
