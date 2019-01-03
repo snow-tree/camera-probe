@@ -12,11 +12,12 @@ export const socketStream =
   (socketType: SocketType = 'udp4') =>
     (timeout: number) => {
       const socket = createSocket({ type: socketType })
-      const stream: Observable<SocketMessage> = Observable.create((obs: Observer<any>) => {
-        const reset_ = new Subject()
-        const stop_ = new Subject()
+      const stopSource = new Subject<any>()
+      const stop = stopSource.asObservable()
 
-        reset_.pipe(
+      const stream: Observable<SocketMessage> = Observable.create((obs: Observer<any>) => {
+        const reset = new Subject<any>()
+        reset.pipe(
           startWith(true),
           switchMap(_ => interval(timeout).pipe(mapTo(true))),
           filter(Boolean)
@@ -29,7 +30,7 @@ export const socketStream =
 
         socket.on('error', err => obs.error(err))
         socket.on('message', (buffer, info) => {
-          reset_.next(false)
+          reset.next(false)
           obs.next({
             buffer,
             info
@@ -37,13 +38,14 @@ export const socketStream =
         })
 
         socket.on('close', (_: any) => {
-          stop_.next()
+          stopSource.next()
           obs.complete()
         })
       })
 
       return {
         socket,
-        stream
+        stream,
+        stop
       }
     }
