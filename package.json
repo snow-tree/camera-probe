@@ -1,0 +1,35 @@
+{
+  "name": "onvif-probe-rx",
+  "version": "1.0.0",
+  "description": "TODO",
+  "author": "Patrick Michalina",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrickmichalina/onvif-probe-rx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/patrickmichalina/onvif-probe-rx/issues"
+  },
+  "homepage": "https://github.com/patrickmichalina/onvif-probe-rx#readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "dependencies": {
+    "rxjs": "^6.3.3",
+    "typescript-monads": "^3.8.0",
+    "uuid": "^3.3.2",
+    "xmldom": "^0.1.27"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/uuid": "^3.4.4",
+    "@types/xmldom": "^0.1.29",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.0",
+    "tslint-immutable": "^5.0.1",
+    "typescript": "^3.2.2"
+  }
+}
