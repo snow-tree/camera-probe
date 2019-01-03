@@ -64,7 +64,3 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
       }, [])
     )
 })
-
-probeONVIFDevices()
-  .run({})
-  .subscribe(console.log, console.error)
