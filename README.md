@@ -9,6 +9,8 @@ npm i onvif-probe-rx
 ```
 
 ## Usage
+For the best developer experience use Typescript.
+
 ```ts
 import { probeONVIFDevices } from 'onvif-probe-rx'
 
