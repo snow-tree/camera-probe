@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none;">onvif-probe-rx</h1>
-<h3 align="center">Better TypeScript Control Flow</h3>
+<h3 align="center">Continous monitoring of your home network ONVIF IP cameras.</h3>
 <p align="center">
   <a href="https://circleci.com/gh/patrickmichalina/onvif-probe-rx">
     <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/onvif-probe-rx.svg?style=shield">
@@ -30,11 +30,6 @@
     <img alt="npm latest version" src="https://img.shields.io/npm/v/onvif-probe-rx/latest.svg">
   </a>
 </p>
-
-# ONVIF Probe RX
-Realtime Open Network Video Interface Forum (ONVIF) device discovery.
-
-Continous monitoring of your home network ONVIF IP cameras.
 
 ## Installation
 ```sh
