@@ -7,6 +7,9 @@ import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
 import { parseXmlResponse } from './parse'
 
+export { IProbeConfig } from './config'
+export { IONVIFDevice }
+
 type IONVIFDeviceWithTimestamp = IONVIFDevice & { readonly ts: number }
 
 const uniqueObjects =
