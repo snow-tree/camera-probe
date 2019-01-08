@@ -9,6 +9,7 @@ import { parseXmlResponse } from './parse'
 
 export { IProbeConfig } from './config'
 export { IONVIFDevice }
+export { DEFAULT_CONFIG }
 
 type IONVIFDeviceWithTimestamp = IONVIFDevice & { readonly ts: number }
 
