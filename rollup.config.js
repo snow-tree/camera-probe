@@ -22,7 +22,7 @@ export default {
   plugins: [
     commonjs(),
     typescript({
-      tsconfig: './tsconfig.rollup.json'
+      tsconfig: './tsconfig.json'
     })
   ]
 }
