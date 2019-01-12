@@ -1,6 +1,6 @@
 defaults: &defaults
   docker:
-    - image: circleci/node:11.5-browsers
+    - image: circleci/node:11.6
 
 version: 2
 jobs:
@@ -21,8 +21,8 @@ jobs:
           name: Lint
           command: npm run lint
       - run:
-          name: Dist
-          command: npm run dist
+          name: Rollup
+          command: npm run rollup
       - persist_to_workspace:
           root: .
           paths:

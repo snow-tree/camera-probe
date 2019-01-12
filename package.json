@@ -21,15 +21,16 @@
     "udp",
     "elecctron"
   ],
-  "main": "dist/index.js",
+  "main": "dist/onvif-probe-rx-cjs.js",
+  "module": "dist/onvif-probe-rx-esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint -p tsconfig.json",
-    "dist": "tsc"
+    "rollup": "rollup -c"
   },
   "dependencies": {
     "rxjs": "^6.3.3",
-    "typescript-monads": "^3.8.0",
+    "typescript-monads": "^3.10.0",
     "uuid": "^3.3.2",
     "xmldom": "^0.1.27"
   },
@@ -39,9 +40,11 @@
     "@types/uuid": "^3.4.4",
     "@types/xmldom": "^0.1.29",
     "fs-extra": "^7.0.1",
-    "semantic-release": "^15.13.2",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.12.0",
+    "rollup": "^1.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-typescript2": "^0.18.1",
+    "semantic-release": "^15.13.3",
+    "tslint": "^5.12.1",
     "tslint-immutable": "^5.0.1",
     "typescript": "^3.2.2"
   },
