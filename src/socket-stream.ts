@@ -1,7 +1,7 @@
 import { createSocket, SocketType } from 'dgram'
 import { Observable, Observer, Subject, interval } from 'rxjs'
 import { AddressInfo } from 'net'
-import { startWith, filter, switchMap, mapTo } from 'rxjs/operators'
+import { startWith, filter, switchMap, mapTo, takeUntil } from 'rxjs/operators'
 
 export interface SocketMessage {
   readonly buffer: Buffer
@@ -20,7 +20,8 @@ export const socketStream =
         reset.pipe(
           startWith(true),
           switchMap(_ => interval(timeout).pipe(mapTo(true))),
-          filter(Boolean)
+          filter(Boolean),
+          takeUntil(stop)
         ).subscribe(() => {
           obs.next({
             buffer: Buffer.alloc(0),
