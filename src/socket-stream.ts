@@ -40,6 +40,7 @@ export const socketStream =
 
         socket.on('close', (_: any) => {
           stopSource.next()
+          stopSource.complete()
           obs.complete()
         })
       })
