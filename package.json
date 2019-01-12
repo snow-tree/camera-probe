@@ -23,6 +23,7 @@
   ],
   "main": "dist/onvif-probe-rx-cjs.js",
   "module": "dist/onvif-probe-rx-esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint -p tsconfig.json",
