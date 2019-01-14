@@ -31,19 +31,18 @@
   </a>
 </p>
 
+
 ## Installation
-This package is designed to be run in a Node environment.
+This package is designed to be run in a Node environment. For the best developer experience use Typescript.
 ```sh
 npm i onvif-probe-rx
 ```
 
 ## Usage
-For the best developer experience use Typescript.
-
+Starts probing the network using the default configuration.
 ```ts
 import { startProbingONVIFDevices } from 'onvif-probe-rx'
 
-// starts probing the network using the default configuration
 startProbingONVIFDevices()
   .subscribe(console.info)
 ```
