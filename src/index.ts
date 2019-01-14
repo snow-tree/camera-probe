@@ -68,3 +68,5 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
       }, [])
     )
 })
+
+export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
