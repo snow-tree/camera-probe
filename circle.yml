@@ -23,6 +23,9 @@ jobs:
       - run:
           name: Rollup
           command: npm run rollup
+      - run:
+          name: CLI
+          command: npm run cli
       - persist_to_workspace:
           root: .
           paths:

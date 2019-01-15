@@ -24,10 +24,14 @@
   "main": "dist/onvif-probe-rx-cjs.js",
   "module": "dist/onvif-probe-rx-esm.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "onvif-probe": "dist/onvif-probe"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint -p tsconfig.json",
-    "rollup": "rollup -c"
+    "rollup": "rollup -c",
+    "cli": "ts-node -P tsconfig.json -O '{\"module\":\"commonjs\"}' ./cli"
   },
   "dependencies": {
     "rxjs": "^6.3.3",
@@ -45,6 +49,7 @@
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-typescript2": "^0.18.1",
     "semantic-release": "^15.13.3",
+    "ts-node": "^7.0.1",
     "tslint": "^5.12.1",
     "tslint-immutable": "^5.0.1",
     "typescript": "^3.2.2"
