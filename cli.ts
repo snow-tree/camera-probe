@@ -6,5 +6,5 @@ const dir = resolve('dist')
 const outPath = resolve(dir, 'onvif-probe')
 
 ensureDirSync(dir)
-writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'./onvif-probe-rx-cjs\').startProbingONVIFDevicesCli()')
+writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'../\').startProbingONVIFDevicesCli()')
 chmodSync(outPath, '755')
