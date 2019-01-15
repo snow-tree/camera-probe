@@ -70,3 +70,10 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
+
+export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
+  .subscribe(v => {
+    console.log('\n')
+    console.log('Watching for connected ONVIF devices...', '\n')
+    console.log(v)
+  })
