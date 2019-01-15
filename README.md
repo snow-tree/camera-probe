@@ -34,7 +34,16 @@
 ## Installation
 This package is designed to be run in a Node environment.
 ```sh
-npm i onvif-probe-rx
+$ npm i onvif-probe-rx
+```
+
+## CLI
+For CLI usage its easier to install globally like so:
+```sh
+$ npm i -g onvif-probe-rx
+
+// starting listening
+$ onvif-probe
 ```
 
 ## Usage
