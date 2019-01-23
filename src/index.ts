@@ -6,7 +6,6 @@ import { IProbeConfig, DEFAULT_CONFIG } from './config'
 import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
 import { parseXmlResponse } from './parse'
-
 export { IProbeConfig } from './config'
 export { IONVIFDevice }
 export { DEFAULT_CONFIG }
@@ -53,6 +52,7 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
             }
           })
       }),
+      distinctUntilChanged((a, b) => a.map(d => d.urn).valueOrUndefined() === b.map(d => d.urn).valueOrUndefined()),
       scan<IMaybe<IONVIFDeviceWithTimestamp>, ReadonlyArray<IONVIFDeviceWithTimestamp>>((acc, curr) => {
         const tsNow = Date.now()
         const removedStaleCameras = acc.filter(c => c.ts < tsNow)
