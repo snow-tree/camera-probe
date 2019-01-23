@@ -7,6 +7,6 @@ export interface IONVIFDevice {
   readonly deviceServiceUri: string
   readonly profiles: ReadonlyArray<string>
   readonly xaddrs: ReadonlyArray<string>
-  readonly types: ReadonlyArray<string>
+  // readonly types: ReadonlyArray<string>
   readonly scopes: ReadonlyArray<string>
 }
