@@ -69,5 +69,4 @@ export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
     console.log('Watching for connected ONVIF devices...', '\n')
     console.log(v)
   })
-
-startProbingONVIFDevices().subscribe(console.log)
+  
