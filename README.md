@@ -59,6 +59,9 @@ startProbingONVIFDevices()
 ```js
 // example probe results
 // two cameras discovered on the network with ONVIF WS-Discovery via UDP
+// This will be the last emitted value in the observable until a new camera comes online
+// or a camera is disconnected or otherwise fails to respond to a ping.
+
 [ { name: 'Amcrest',
     hardware: 'IP2M-8200',
     location: 'china',
