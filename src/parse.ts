@@ -19,12 +19,6 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
     const scopeParser = (scopes: ReadonlyArray<string>) => (pattern: string) =>
       maybe(scopes.find(a => a.toLowerCase().includes(`onvif://www.onvif.org/${pattern}`.toLocaleLowerCase()))).flatMapAuto(a => a.split('/').pop())
 
-    // const types = parseProbeDiscoveryElements('Types')
-    //   .flatMapAuto(a => a.textContent)
-    //   .map(a => a.split(' '))
-    //   .map(a => a.map(b => b.split(':').pop()).filter<string>(Boolean as any))
-    //   .valueOr([])
-
     const scopes = parseProbeDiscoveryElements('Scopes').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
     const xaddrs = parseProbeDiscoveryElements('XAddrs').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
     const metadataVersion = parseProbeDiscoveryElements('MetadataVersion').flatMapAuto(a => a.textContent).valueOr(config.NOT_FOUND_STRING)
@@ -46,6 +40,9 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
       .find(a => a.includes(`onvif/device_service`)))
       .valueOr('0.0.0.0')
 
+    const ip = maybe(deviceServiceUri.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/))
+      .map(a => a[0]).valueOr(deviceServiceUri)
+
     return {
       name: valueFromScope('name'),
       hardware: scopeParse('hardware').match({
@@ -54,6 +51,7 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
       }),
       location: valueFromScope('location'),
       deviceServiceUri,
+      ip,
       metadataVersion,
       urn,
       scopes,
@@ -65,6 +63,7 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
     hardware: config.NOT_FOUND_STRING,
     location: config.NOT_FOUND_STRING,
     deviceServiceUri: config.NOT_FOUND_STRING,
+    ip: config.NOT_FOUND_STRING,
     metadataVersion: config.NOT_FOUND_STRING,
     urn: config.NOT_FOUND_STRING,
     scopes: [],
