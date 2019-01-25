@@ -65,12 +65,21 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
 
   return combineLatest(onvifScan, ipScan, (onvifResults, ipscanResults) => {
     const ipDevicesNotInOnvifScan = ipscanResults.filter(a => !onvifResults.some(onv => onv.ip === maybeIpAddress(a).valueOrUndefined()))
-      .map(deviceServiceUri => {
+      .map<IONVIFDevice>(deviceServiceUri => {
         return {
-          deviceServiceUri
+          deviceServiceUri,
+          name: deviceServiceUri,
+          hardware: config.NOT_FOUND_STRING,
+          location: config.NOT_FOUND_STRING,
+          ip: config.NOT_FOUND_STRING,
+          metadataVersion: config.NOT_FOUND_STRING,
+          urn: config.NOT_FOUND_STRING,
+          scopes: [],
+          profiles: [],
+          xaddrs: []
         }
       })
-    return [...onvifResults, ...ipDevicesNotInOnvifScan as any]
+    return [...onvifResults, ...ipDevicesNotInOnvifScan]
   }).pipe(distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 })
 
