@@ -56,6 +56,42 @@ startProbingONVIFDevices()
   .subscribe(console.info)
 ```
 
+```js
+// example probe results
+// two cameras discovered on the network with ONVIF WS-Discovery via UDP
+[ { name: 'Amcrest',
+    hardware: 'IP2M-8200',
+    location: 'china',
+    deviceServiceUri: 'http://192.168.5.191/onvif/device_service',
+    ip: '192.168.5.191',
+    metadataVersion: '1',
+    urn: 'fae40e7f-91e2-489a-afe6-66e19b667952',
+    scopes:
+     [ 'onvif://www.onvif.org/location/country/china',
+       'onvif://www.onvif.org/name/Amcrest',
+       'onvif://www.onvif.org/hardware/IP2M-8200',
+       'onvif://www.onvif.org/Profile/Streaming',
+       'onvif://www.onvif.org/type/Network_Video_Transmitter',
+       'onvif://www.onvif.org/extension/unique_identifier',
+       'onvif://www.onvif.org/Profile/G' ],
+    profiles: [ 'Streaming', 'G' ],
+    xaddrs: [ 'http://192.168.5.191/onvif/device_service' ] },
+  { name: 'IPCAM',
+    hardware: '421FZ',
+    location: 'china',
+    deviceServiceUri: 'http://192.168.5.13:80/onvif/device_service',
+    ip: '192.168.5.13',
+    metadataVersion: '1',
+    urn: '0cbc0d5b-a7a1-47c7-bb60-85c878bb540e',
+    scopes:
+     [ 'onvif://www.onvif.org/Profile/Streaming',
+       'onvif://www.onvif.org/Model/421FZ',
+       'onvif://www.onvif.org/Name/IPCAM',
+       'onvif://www.onvif.org/location/country/china' ],
+    profiles: [ 'Streaming' ],
+    xaddrs: [ 'http://192.168.5.13:80/onvif/device_service' ] } ]
+```
+
 If you'd like to tweak default settings feel free to override in the `.run()` method.
 
 ```ts
