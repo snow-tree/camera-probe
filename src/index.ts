@@ -1,22 +1,24 @@
-import { timer, Observable, forkJoin, of } from 'rxjs'
-import { socketStream } from './socket-stream'
-import { maybe, reader, IMaybe } from 'typescript-monads'
 import { map, distinctUntilChanged, takeUntil, mergeScan } from 'rxjs/operators'
+import { maybe, reader, IMaybe } from 'typescript-monads'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
+import { timer, Observable, forkJoin } from 'rxjs'
+import { parseXmlResponse } from './parse'
+import { socketStream } from './socket-stream'
 import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
-import { parseXmlResponse } from './parse'
 export { IProbeConfig } from './config'
-export { IONVIFDevice }
-export { DEFAULT_CONFIG }
 import { MD5 } from 'object-hash'
 import { ping } from 'ping-rx'
+export { IONVIFDevice }
+export { DEFAULT_CONFIG }
 
 const uniqueObjects =
   (arr: ReadonlyArray<any>) =>
     arr.filter((object, index) => index === arr.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)))
 
-export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<ReadonlyArray<IONVIFDevice>>>(partialConfig => {
+type ProbeStream = Observable<ReadonlyArray<IONVIFDevice>>
+
+export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream>(partialConfig => {
   const config: IProbeConfig = { ...DEFAULT_CONFIG, ...partialConfig }
 
   const ss = socketStream()(config.PROBE_NETWORK_TIMEOUT_MS)
@@ -43,8 +45,8 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
   return socketMessages
     .pipe(
       map(xmlResponse => xmlResponse
-        .map(r => config.DOM_PARSER.parseFromString(r, 'application/xml'))
-        .map(p => parseXmlResponse(p)(config))),
+        .map(xmlString => config.DOM_PARSER.parseFromString(xmlString, 'application/xml'))
+        .map(xmlDoc => parseXmlResponse(xmlDoc)(config))),
       mergeScan<IMaybe<IONVIFDevice>, ReadonlyArray<IONVIFDevice>>((acc, curr) => {
         return forkJoin([...acc, curr.valueOrUndefined() as IONVIFDevice].filter(Boolean).map(device => ping(device.ip)()(config.PROBE_NETWORK_TIMEOUT_MS).pipe(
           map(v => v.isOk()
@@ -56,8 +58,7 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
               ...b.filter(a => a.include).map(c => c.device)
             ])))
       }, []),
-      distinctUntilChanged((a, b) => MD5(a) === MD5(b)),
-    )
+      distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
