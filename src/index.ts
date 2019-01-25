@@ -1,7 +1,7 @@
-import { timer, Observable } from 'rxjs'
+import { timer, Observable, forkJoin, of } from 'rxjs'
 import { socketStream } from './socket-stream'
 import { maybe, reader, IMaybe } from 'typescript-monads'
-import { map, distinctUntilChanged, scan, takeUntil } from 'rxjs/operators'
+import { map, distinctUntilChanged, takeUntil, mergeScan } from 'rxjs/operators'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
 import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
@@ -9,8 +9,8 @@ import { parseXmlResponse } from './parse'
 export { IProbeConfig } from './config'
 export { IONVIFDevice }
 export { DEFAULT_CONFIG }
-
-type IONVIFDeviceWithTimestamp = IONVIFDevice & { readonly ts: number }
+import { MD5 } from 'object-hash'
+import { ping } from 'ping-rx'
 
 const uniqueObjects =
   (arr: ReadonlyArray<any>) =>
@@ -42,31 +42,44 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
 
   return socketMessages
     .pipe(
-      map(xmlResponse => {
-        return xmlResponse
-          .map(r => config.DOM_PARSER.parseFromString(r, 'application/xml'))
-          .map(p => {
-            return {
-              ...parseXmlResponse(p)(config),
-              ts: Date.now()
-            }
-          })
-      }),
-      distinctUntilChanged((a, b) => a.map(d => d.urn).valueOrUndefined() === b.map(d => d.urn).valueOrUndefined()),
-      scan<IMaybe<IONVIFDeviceWithTimestamp>, ReadonlyArray<IONVIFDeviceWithTimestamp>>((acc, curr) => {
-        const tsNow = Date.now()
-        const removedStaleCameras = acc.filter(c => c.ts < tsNow)
-
-        const accumulated = curr
-          .map(cam => {
-            const { ts, ...noTs } = cam
-            return [...removedStaleCameras, noTs]
-          })
-          .valueOr(removedStaleCameras)
-
-        return uniqueObjects(accumulated)
-      }, [])
-    )
+      map(xmlResponse => xmlResponse
+        .map(r => config.DOM_PARSER.parseFromString(r, 'application/xml'))
+        .map(p => parseXmlResponse(p)(config))),
+      mergeScan<IMaybe<IONVIFDevice>, ReadonlyArray<IONVIFDevice>>((acc, curr) => {
+        return forkJoin([...acc, curr.valueOrUndefined() as IONVIFDevice].filter(Boolean).map(b => {
+          return ping(b.ip)(80)(config.PROBE_NETWORK_TIMEOUT_MS).pipe(map(v => {
+            return v.isOk()
+              ? { include: true, device: b }
+              : { include: false, device: b }
+          }))
+        }))
+          .pipe(
+            map(b => {
+              const toRemove = b.filter(c => c.include === false).map(a => a.device.deviceServiceUri)
+              return uniqueObjects([...acc.filter(a => toRemove.some(c => c !== a.deviceServiceUri)), ...b.filter(a => a.include).map(c => c.device)])
+            })
+          )
+      }, []),
+      distinctUntilChanged((a, b) => MD5(a) === MD5(b)),
+      // flatMap(devices => thing().pipe(
+      //   map(v => {
+      //     const arg = v.filter(b => !devices.some(c => c.deviceServiceUri === b)).map<IONVIFDevice>(z => {
+      //       return {
+      //         name: config.NOT_FOUND_STRING,
+      //         hardware: config.NOT_FOUND_STRING,
+      //         location: config.NOT_FOUND_STRING,
+      //         deviceServiceUri: z,
+      //         metadataVersion: config.NOT_FOUND_STRING,
+      //         urn: config.NOT_FOUND_STRING,
+      //         scopes: [],
+      //         profiles: [],
+      //         xaddrs: []
+      //       }
+      //     })
+      //     return [...devices, ...arg]
+      //   })
+      // ))
+    ) as any
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
@@ -77,3 +90,5 @@ export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
     console.log('Watching for connected ONVIF devices...', '\n')
     console.log(v)
   })
+
+startProbingONVIFDevices().subscribe(console.log)
