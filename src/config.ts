@@ -10,6 +10,11 @@ export interface IProbeConfig {
   readonly PORT: number
 
   /**
+   * Enabled IP based scanning
+   */
+  readonly ENABLE_IP_SCANNING: boolean
+
+  /**
    * Multicast address.
    */
   readonly MULTICAST_ADDRESS: string
@@ -48,6 +53,7 @@ export interface IProbeConfig {
 
 export const DEFAULT_CONFIG: IProbeConfig = {
   PORT: 3702,
+  ENABLE_IP_SCANNING: true,
   MULTICAST_ADDRESS: '239.255.255.250',
   PROBE_SAMPLE_TIME_MS: 2000,
   PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
