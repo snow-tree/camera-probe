@@ -46,40 +46,18 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, Observable<
         .map(r => config.DOM_PARSER.parseFromString(r, 'application/xml'))
         .map(p => parseXmlResponse(p)(config))),
       mergeScan<IMaybe<IONVIFDevice>, ReadonlyArray<IONVIFDevice>>((acc, curr) => {
-        return forkJoin([...acc, curr.valueOrUndefined() as IONVIFDevice].filter(Boolean).map(b => {
-          return ping(b.ip)(80)(config.PROBE_NETWORK_TIMEOUT_MS).pipe(map(v => {
-            return v.isOk()
-              ? { include: true, device: b }
-              : { include: false, device: b }
-          }))
-        }))
+        return forkJoin([...acc, curr.valueOrUndefined() as IONVIFDevice].filter(Boolean).map(device => ping(device.ip)()(config.PROBE_NETWORK_TIMEOUT_MS).pipe(
+          map(v => v.isOk()
+            ? { include: true, device }
+            : { include: false, device }))))
           .pipe(
-            map(b => {
-              const toRemove = b.filter(c => c.include === false).map(a => a.device.deviceServiceUri)
-              return uniqueObjects([...acc.filter(a => toRemove.some(c => c !== a.deviceServiceUri)), ...b.filter(a => a.include).map(c => c.device)])
-            })
-          )
+            map(b => uniqueObjects([
+              ...acc.filter(a => b.filter(c => c.include === false).map(a => a.device.deviceServiceUri).some(c => c !== a.deviceServiceUri)),
+              ...b.filter(a => a.include).map(c => c.device)
+            ])))
       }, []),
       distinctUntilChanged((a, b) => MD5(a) === MD5(b)),
-      // flatMap(devices => thing().pipe(
-      //   map(v => {
-      //     const arg = v.filter(b => !devices.some(c => c.deviceServiceUri === b)).map<IONVIFDevice>(z => {
-      //       return {
-      //         name: config.NOT_FOUND_STRING,
-      //         hardware: config.NOT_FOUND_STRING,
-      //         location: config.NOT_FOUND_STRING,
-      //         deviceServiceUri: z,
-      //         metadataVersion: config.NOT_FOUND_STRING,
-      //         urn: config.NOT_FOUND_STRING,
-      //         scopes: [],
-      //         profiles: [],
-      //         xaddrs: []
-      //       }
-      //     })
-      //     return [...devices, ...arg]
-      //   })
-      // ))
-    ) as any
+    )
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
