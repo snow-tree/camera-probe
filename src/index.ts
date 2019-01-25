@@ -61,26 +61,28 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
       }, []),
       distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 
-  const ipScan = timer(config.PROBE_SAMPLE_START_DELAY_TIME_MS, config.PROBE_SAMPLE_TIME_MS).pipe(flatMap(() => ipscan()))
+  const ipScan = () => timer(config.PROBE_SAMPLE_START_DELAY_TIME_MS, config.PROBE_SAMPLE_TIME_MS).pipe(flatMap(() => ipscan()))
 
-  return combineLatest(onvifScan, ipScan, (onvifResults, ipscanResults) => {
-    const ipDevicesNotInOnvifScan = ipscanResults.filter(a => !onvifResults.some(onv => onv.ip === maybeIpAddress(a).valueOrUndefined()))
-      .map<IONVIFDevice>(deviceServiceUri => {
-        return {
-          deviceServiceUri,
-          name: deviceServiceUri,
-          hardware: config.NOT_FOUND_STRING,
-          location: config.NOT_FOUND_STRING,
-          ip: config.NOT_FOUND_STRING,
-          metadataVersion: config.NOT_FOUND_STRING,
-          urn: config.NOT_FOUND_STRING,
-          scopes: [],
-          profiles: [],
-          xaddrs: []
-        }
-      })
-    return [...onvifResults, ...ipDevicesNotInOnvifScan]
-  }).pipe(distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
+  return !config.ENABLE_IP_SCANNING
+    ? onvifScan
+    : combineLatest(onvifScan, ipScan(), (onvifResults, ipscanResults) => {
+      const ipDevicesNotInOnvifScan = ipscanResults.filter(a => !onvifResults.some(onv => onv.ip === maybeIpAddress(a).valueOrUndefined()))
+        .map<IONVIFDevice>(deviceServiceUri => {
+          return {
+            deviceServiceUri,
+            name: maybeIpAddress(deviceServiceUri).valueOr(config.NOT_FOUND_STRING),
+            hardware: config.NOT_FOUND_STRING,
+            location: config.NOT_FOUND_STRING,
+            ip: config.NOT_FOUND_STRING,
+            metadataVersion: config.NOT_FOUND_STRING,
+            urn: config.NOT_FOUND_STRING,
+            scopes: [],
+            profiles: [],
+            xaddrs: []
+          }
+        })
+      return [...onvifResults, ...ipDevicesNotInOnvifScan]
+    }).pipe(distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
@@ -92,4 +94,6 @@ export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
     console.log(v)
   })
 
-startProbingONVIFDevices().subscribe(console.log)
+probeONVIFDevices().run({
+  ENABLE_IP_SCANNING: true
+}).subscribe(console.log)
