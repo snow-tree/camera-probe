@@ -35,6 +35,10 @@
     "cli.run": "ts-node -P tsconfig.json -O '{\"module\":\"commonjs\"}' src/index"
   },
   "dependencies": {
+    "@akanass/rx-http-request": "^3.1.0",
+    "@types/object-hash": "^1.2.0",
+    "object-hash": "^1.3.1",
+    "ping-rx": "^1.0.0",
     "rxjs": "^6.3.3",
     "typescript-monads": "^3.10.0",
     "uuid": "^3.3.2",
