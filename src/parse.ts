@@ -19,12 +19,6 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
     const scopeParser = (scopes: ReadonlyArray<string>) => (pattern: string) =>
       maybe(scopes.find(a => a.toLowerCase().includes(`onvif://www.onvif.org/${pattern}`.toLocaleLowerCase()))).flatMapAuto(a => a.split('/').pop())
 
-    // const types = parseProbeDiscoveryElements('Types')
-    //   .flatMapAuto(a => a.textContent)
-    //   .map(a => a.split(' '))
-    //   .map(a => a.map(b => b.split(':').pop()).filter<string>(Boolean as any))
-    //   .valueOr([])
-
     const scopes = parseProbeDiscoveryElements('Scopes').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
     const xaddrs = parseProbeDiscoveryElements('XAddrs').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
     const metadataVersion = parseProbeDiscoveryElements('MetadataVersion').flatMapAuto(a => a.textContent).valueOr(config.NOT_FOUND_STRING)
