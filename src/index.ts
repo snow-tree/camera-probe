@@ -1,14 +1,15 @@
-import { map, distinctUntilChanged, takeUntil, mergeScan } from 'rxjs/operators'
-import { maybe, reader, IMaybe } from 'typescript-monads'
+import { map, distinctUntilChanged, takeUntil, mergeScan, flatMap } from 'rxjs/operators'
+import { timer, Observable, forkJoin, combineLatest } from 'rxjs'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
-import { timer, Observable, forkJoin } from 'rxjs'
-import { parseXmlResponse } from './parse'
+import { maybe, reader, IMaybe } from 'typescript-monads'
+import { parseXmlResponse, maybeIpAddress } from './parse'
 import { socketStream } from './socket-stream'
 import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
 export { IProbeConfig } from './config'
 import { MD5 } from 'object-hash'
 import { ping } from 'ping-rx'
+import { ipscan } from './ipscan'
 export { IONVIFDevice }
 export { DEFAULT_CONFIG }
 
@@ -42,7 +43,7 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
       buffers.forEach(b => ss.socket.send(b, 0, b.length, config.PORT, config.MULTICAST_ADDRESS))
     })
 
-  return socketMessages
+  const onvifScan = socketMessages
     .pipe(
       map(xmlResponse => xmlResponse
         .map(xmlString => config.DOM_PARSER.parseFromString(xmlString, 'application/xml'))
@@ -59,6 +60,18 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
             ])))
       }, []),
       distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
+
+  const ipScan = timer(config.PROBE_SAMPLE_START_DELAY_TIME_MS, config.PROBE_SAMPLE_TIME_MS).pipe(flatMap(() => ipscan()))
+
+  return combineLatest(onvifScan, ipScan, (onvifResults, ipscanResults) => {
+    const ipDevicesNotInOnvifScan = ipscanResults.filter(a => !onvifResults.some(onv => onv.ip === maybeIpAddress(a).valueOrUndefined()))
+      .map(deviceServiceUri => {
+        return {
+          deviceServiceUri
+        }
+      })
+    return [...onvifResults, ...ipDevicesNotInOnvifScan as any]
+  }).pipe(distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 })
 
 export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
@@ -69,4 +82,5 @@ export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
     console.log('Watching for connected ONVIF devices...', '\n')
     console.log(v)
   })
-  
+
+startProbingONVIFDevices().subscribe(console.log)

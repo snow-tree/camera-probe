@@ -7,6 +7,8 @@ const SCHEMAS = {
   discovery: 'http://schemas.xmlsoap.org/ws/2005/04/discovery'
 }
 
+export const maybeIpAddress = (str: string) => maybe(str.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)).map(a => a[0])
+
 export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVIFDevice => {
   const simpleParse = (elm: Document | Element) => (ns: string) => (node: string) => maybe(elm.getElementsByTagNameNS(ns, node).item(0))
   const maybeRootProbeElement = maybe(doc.getElementsByTagNameNS(SCHEMAS.discovery, 'ProbeMatch').item(0))
@@ -40,8 +42,7 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
       .find(a => a.includes(`onvif/device_service`)))
       .valueOr('0.0.0.0')
 
-    const ip = maybe(deviceServiceUri.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/))
-      .map(a => a[0]).valueOr(deviceServiceUri)
+    const ip = maybeIpAddress(deviceServiceUri).valueOr(deviceServiceUri)
 
     return {
       name: valueFromScope('name'),

@@ -1,14 +1,13 @@
-import { forkJoin, of } from 'rxjs'
-import { ok, fail } from 'typescript-monads'
 import { flatMap, map, catchError } from 'rxjs/operators'
 import { RxHR as http } from '@akanass/rx-http-request'
+import { ok, fail } from 'typescript-monads'
+import { forkJoin, of } from 'rxjs'
 import { ping } from 'ping-rx'
 
 const createNumList = (num: number) => Array.from(Array(num).keys())
 
 // TODO: base IP from os.networkinterfaces() `192.168.1.${num}
-
-export const thing = () => forkJoin(createNumList(256).map(num => ping(`192.168.1.${num}`)(80)())).pipe(
+export const ipscan = () => forkJoin(createNumList(256).map(num => ping(`192.168.1.${num}`)()())).pipe(
   map(res => res.filter(a => a.isOk()).map(a => `http://${a.unwrap().host}/onvif/device_service`)),
   flatMap(urls => forkJoin(
     urls.map(url => http.post(url, {
@@ -23,6 +22,5 @@ export const thing = () => forkJoin(createNumList(256).map(num => ping(`192.168.
       catchError(err => of(fail(err)))
     ))
   )),
-  map(hosts => hosts.filter(b => b.isOk()).map(z => z.unwrap()))
-)
+  map(hosts => hosts.filter(b => b.isOk()).map(z => z.unwrap())))
 
