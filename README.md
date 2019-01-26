@@ -102,7 +102,7 @@ import { probeONVIFDevices } from 'onvif-probe-rx'
 
 probeONVIFDevices()
   .run({
-    PORT: 553,
+    PORTS: [3702],
     PROBE_NETWORK_TIMEOUT_MS: 20000
   })
   .subscribe(console.log)
@@ -111,7 +111,7 @@ probeONVIFDevices()
 ## Default Configuration
 ```ts
 const DEFAULT_CONFIG: IProbeConfig = {
-  PORT: 3702,
+  PORTS: [139, 445, 1124, 3702],
   ENABLE_IP_SCANNING: true,
   MULTICAST_ADDRESS: '239.255.255.250',
   PROBE_SAMPLE_TIME_MS: 2000,

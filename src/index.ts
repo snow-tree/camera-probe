@@ -40,7 +40,9 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
       )
     )
     .subscribe(buffers => {
-      buffers.forEach(b => ss.socket.send(b, 0, b.length, config.PORT, config.MULTICAST_ADDRESS))
+      config.PORTS.forEach(port => {
+        buffers.forEach(b => ss.socket.send(b, 0, b.length, port, config.MULTICAST_ADDRESS))
+      })
     })
 
   const onvifScan = socketMessages
@@ -93,7 +95,3 @@ export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
     console.log('Watching for connected ONVIF devices...', '\n')
     console.log(v)
   })
-
-probeONVIFDevices().run({
-  ENABLE_IP_SCANNING: true
-}).subscribe(console.log)
