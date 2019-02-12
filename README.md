@@ -110,9 +110,13 @@ probeONVIFDevices()
 
 ## Default Configuration
 ```ts
-const DEFAULT_CONFIG: IProbeConfig = {
+export const DEFAULT_CONFIG: IProbeConfig = {
   PORTS: [139, 445, 1124, 3702],
-  ENABLE_IP_SCANNING: true,
+  IP_SCANNER: {
+    ENABLED: true,
+    IP_ADDRESSES: [],
+    PREFIXES: []
+  },
   MULTICAST_ADDRESS: '239.255.255.250',
   PROBE_SAMPLE_TIME_MS: 2000,
   PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
