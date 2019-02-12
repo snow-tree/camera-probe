@@ -1,5 +1,29 @@
 import { DOMParser } from 'xmldom'
 
+export interface IIPScannerConfig {
+  /**
+   * Enable IP Scanning
+   */
+  readonly ENABLED: boolean
+
+  /**
+   * List of ip prefixes to scan (3 digits)
+   * This will be in addition to the defailt gateway devices
+   * found on the local machine. Each prefix will generate
+   * 255 addresses to scan (0...255)
+   * ex: ['10.211.55', '44.55.11']
+   */
+  readonly PREFIXES: ReadonlyArray<string>
+
+  /**
+   * List of ip address to scan
+   * This will be in addition to the defailt gateway devices
+   * found on the local machine
+   * ex: ['10.211.55.10', '44.55.11.15']
+   */
+  readonly IP_ADDRESSES: ReadonlyArray<string>
+}
+
 /**
  * Probe configuration
  */
@@ -10,9 +34,9 @@ export interface IProbeConfig {
   readonly PORTS: ReadonlyArray<number>
 
   /**
-   * Enabled IP based scanning
+   * IP based scanning
    */
-  readonly ENABLE_IP_SCANNING: boolean
+  readonly IP_SCANNER: Partial<IIPScannerConfig>
 
   /**
    * Multicast address.
@@ -44,7 +68,7 @@ export interface IProbeConfig {
    * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
    */
   readonly DOM_PARSER: DOMParser
-  
+
   /**
    * When an attribute is undefined, use this text instead.
    */
@@ -53,7 +77,11 @@ export interface IProbeConfig {
 
 export const DEFAULT_CONFIG: IProbeConfig = {
   PORTS: [139, 445, 1124, 3702],
-  ENABLE_IP_SCANNING: true,
+  IP_SCANNER: {
+    ENABLED: true,
+    IP_ADDRESSES: [],
+    PREFIXES: []
+  },
   MULTICAST_ADDRESS: '239.255.255.250',
   PROBE_SAMPLE_TIME_MS: 2000,
   PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
