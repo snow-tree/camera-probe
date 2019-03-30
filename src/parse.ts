@@ -2,50 +2,73 @@ import { IProbeConfig } from './config'
 import { IONVIFDevice } from './device'
 import { maybe } from 'typescript-monads'
 
+const SCHEMAS = {
+  addressing: 'http://schemas.xmlsoap.org/ws/2004/08/addressing',
+  discovery: 'http://schemas.xmlsoap.org/ws/2005/04/discovery'
+}
+
+export const maybeIpAddress = (str: string) => maybe(str.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)).map(a => a[0])
+
 export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVIFDevice => {
-  const simpleParse = (elm: string) => maybe(doc.getElementsByTagName(elm).item(0))
-    .flatMap(a => maybe(a.textContent))
-  const scopeParser = (scopes: ReadonlyArray<string>) => (pattern: string) =>
-    maybe(scopes.find(a => a.includes(`onvif://www.onvif.org/${pattern}`)))
-      .flatMap(a => maybe(a.split('/').pop()))
+  const simpleParse = (elm: Document | Element) => (ns: string) => (node: string) => maybe(elm.getElementsByTagNameNS(ns, node).item(0))
+  const maybeRootProbeElement = maybe(doc.getElementsByTagNameNS(SCHEMAS.discovery, 'ProbeMatch').item(0))
 
-  const scopes = simpleParse('d:Scopes').map(a => a.split(' ')).valueOr([])
+  return maybeRootProbeElement.map<IONVIFDevice>(rootElement => {
+    const parseProbeElements = simpleParse(rootElement)
+    const parseProbeDiscoveryElements = parseProbeElements(SCHEMAS.discovery)
+    const parseProbeAddressingElements = parseProbeElements(SCHEMAS.addressing)
 
-  const types = simpleParse('d:Types')
-    .map(a => a.split(' '))
-    .map(a => a.map(b => b.split(':').pop()).filter<string>(Boolean as any))
-    .valueOr([])
+    const scopeParser = (scopes: ReadonlyArray<string>) => (pattern: string) =>
+      maybe(scopes.find(a => a.toLowerCase().includes(`onvif://www.onvif.org/${pattern}`.toLocaleLowerCase()))).flatMapAuto(a => a.split('/').pop())
 
-  const xaddrs = simpleParse('d:XAddrs').map(a => a.split(' ')).valueOr([])
+    const scopes = parseProbeDiscoveryElements('Scopes').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
+    const xaddrs = parseProbeDiscoveryElements('XAddrs').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])
+    const metadataVersion = parseProbeDiscoveryElements('MetadataVersion').flatMapAuto(a => a.textContent).valueOr(config.NOT_FOUND_STRING)
 
-  const scopeParse = scopeParser(scopes)
-  const valueFromScope = (str: string) => scopeParse(str).valueOr(config.NOT_FOUND_STRING)
+    const scopeParse = scopeParser(scopes)
+    const valueFromScope = (str: string) => scopeParse(str).valueOr(config.NOT_FOUND_STRING)
 
-  const urn = simpleParse('a:Address')
-    .map(a => a.replace('uuid:', ''))
-    .valueOr(config.NOT_FOUND_STRING)
+    const urn = parseProbeAddressingElements('Address')
+      .flatMapAuto(a => a.textContent)
+      .map(a => a.split(':').pop() || '')
+      .valueOr(config.NOT_FOUND_STRING)
 
-  const profiles = scopes
-    .filter(a => a.includes(`onvif://www.onvif.org/Profile`))
-    .map(b => b.split('/').pop())
-    .filter<string>(Boolean as any)
+    const profiles = scopes
+      .filter(a => a.includes(`onvif://www.onvif.org/Profile`))
+      .map(b => b.split('/').pop())
+      .filter<string>(Boolean as any)
 
-  const deviceServiceUri = maybe(xaddrs
-    .find(a => a.includes(`onvif/device_service`)))
-    .valueOr('0.0.0.0')
+    const deviceServiceUri = maybe(xaddrs
+      .find(a => a.includes(`onvif/device_service`)))
+      .valueOr('0.0.0.0')
 
-  const metadataVersion = simpleParse('d:MetadataVersion').valueOr(config.NOT_FOUND_STRING)
+    const ip = maybeIpAddress(deviceServiceUri).valueOr(deviceServiceUri)
 
-  return {
-    name: valueFromScope('name'),
-    hardware: valueFromScope('hardware'),
-    location: valueFromScope('location'),
-    deviceServiceUri,
-    metadataVersion,
-    urn,
-    scopes,
-    profiles,
-    types,
-    xaddrs
-  }
+    return {
+      name: valueFromScope('name'),
+      hardware: scopeParse('hardware').match({
+        none: () => valueFromScope('model'),
+        some: val => val
+      }),
+      location: valueFromScope('location'),
+      deviceServiceUri,
+      ip,
+      metadataVersion,
+      urn,
+      scopes,
+      profiles,
+      xaddrs
+    }
+  }).valueOr({
+    name: config.NOT_FOUND_STRING,
+    hardware: config.NOT_FOUND_STRING,
+    location: config.NOT_FOUND_STRING,
+    deviceServiceUri: config.NOT_FOUND_STRING,
+    ip: config.NOT_FOUND_STRING,
+    metadataVersion: config.NOT_FOUND_STRING,
+    urn: config.NOT_FOUND_STRING,
+    scopes: [],
+    profiles: [],
+    xaddrs: []
+  })
 }
