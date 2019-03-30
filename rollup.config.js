@@ -17,7 +17,8 @@ export default {
   external: [
     ...Object.keys(pkg.dependencies || {}),
     'rxjs/operators',
-    'dgram'
+    'dgram',
+    'os'
   ],
   plugins: [
     commonjs(),
