@@ -12,7 +12,7 @@ export const getIpPrefixListFromNetworkInterfaces = (family: 'IPv4' | 'IPv6' = '
   const interfaceDict = networkInterfaces()
 
   return Object.keys(interfaceDict)
-    .reduce((acc: ReadonlyArray<NetworkInterfaceInfo>, curr) => [...acc, ...interfaceDict[curr]], [])
+    .reduce((acc: readonly NetworkInterfaceInfo[], curr) => [...acc, ...interfaceDict[curr]], [])
     .filter(a => a.family === family && !a.internal)
     .map(c => c.address.split('.').slice(0, 3).join('.'))
 }
@@ -21,8 +21,8 @@ export const getIpPrefixListFromNetworkInterfaces = (family: 'IPv4' | 'IPv6' = '
 export const combined = (...args: string[][]) => args.reduce((acc, curr) => [...acc, ...curr], [])
 
 export const ipscan =
-  (ipAddressPrefixes: ReadonlyArray<string> = []) =>
-    (ipAddresses: ReadonlyArray<string> = []) => {
+  (ipAddressPrefixes: readonly string[] = []) =>
+    (ipAddresses: readonly string[] = []) => {
       const standard = getIpPrefixListFromNetworkInterfaces().map(getIpRangeFromPrefix())
       const pref = ipAddressPrefixes.map(getIpRangeFromPrefix())
       // tslint:disable-next-line:readonly-array
