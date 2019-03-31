@@ -18,7 +18,7 @@ export const parseXmlResponse = (doc: Document) => (config: IProbeConfig): IONVI
     const parseProbeDiscoveryElements = parseProbeElements(SCHEMAS.discovery)
     const parseProbeAddressingElements = parseProbeElements(SCHEMAS.addressing)
 
-    const scopeParser = (scopes: ReadonlyArray<string>) => (pattern: string) =>
+    const scopeParser = (scopes: readonly string[]) => (pattern: string) =>
       maybe(scopes.find(a => a.toLowerCase().includes(`onvif://www.onvif.org/${pattern}`.toLocaleLowerCase()))).flatMapAuto(a => a.split('/').pop())
 
     const scopes = parseProbeDiscoveryElements('Scopes').flatMapAuto(a => a.textContent).map(a => a.split(' ')).valueOr([])

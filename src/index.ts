@@ -14,10 +14,10 @@ export { IONVIFDevice }
 export { DEFAULT_CONFIG }
 
 const uniqueObjects =
-  (arr: ReadonlyArray<any>) =>
+  (arr: readonly any[]) =>
     arr.filter((object, index) => index === arr.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)))
 
-type ProbeStream = Observable<ReadonlyArray<IONVIFDevice>>
+type ProbeStream = Observable<readonly IONVIFDevice[]>
 
 export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream>(partialConfig => {
   const config: IProbeConfig = { ...DEFAULT_CONFIG, ...partialConfig }
@@ -50,7 +50,7 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
       map(xmlResponse => xmlResponse
         .map(xmlString => config.DOM_PARSER.parseFromString(xmlString, 'application/xml'))
         .map(xmlDoc => parseXmlResponse(xmlDoc)(config))),
-      mergeScan<IMaybe<IONVIFDevice>, ReadonlyArray<IONVIFDevice>>((acc, curr) => {
+      mergeScan<IMaybe<IONVIFDevice>, readonly IONVIFDevice[]>((acc, curr) => {
         return forkJoin([...acc, curr.valueOrUndefined() as IONVIFDevice].filter(Boolean).map(device => ping(device.ip)()(config.PROBE_NETWORK_TIMEOUT_MS).pipe(
           map(v => v.isOk()
             ? { include: true, device }
