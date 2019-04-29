@@ -13,7 +13,7 @@ export interface IIPScannerConfig {
    * 255 addresses to scan (0...255)
    * ex: ['10.211.55', '44.55.11']
    */
-  readonly PREFIXES: ReadonlyArray<string>
+  readonly PREFIXES: readonly string[]
 
   /**
    * List of ip address to scan
@@ -21,7 +21,7 @@ export interface IIPScannerConfig {
    * found on the local machine
    * ex: ['10.211.55.10', '44.55.11.15']
    */
-  readonly IP_ADDRESSES: ReadonlyArray<string>
+  readonly IP_ADDRESSES: readonly string[]
 }
 
 /**
@@ -31,7 +31,7 @@ export interface IProbeConfig {
   /**
    * Ports to broadcast to.
    */
-  readonly PORTS: ReadonlyArray<number>
+  readonly PORTS: readonly number[]
 
   /**
    * IP based scanning
@@ -62,7 +62,7 @@ export interface IProbeConfig {
   /**
    * ONVIF device types to check for.
    */
-  readonly ONVIF_DEVICES: ReadonlyArray<string>
+  readonly ONVIF_DEVICES: readonly string[]
 
   /**
    * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
