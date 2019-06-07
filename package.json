@@ -20,7 +20,10 @@
     "typescript",
     "udp",
     "electron",
-    "webcam"
+    "webcam",
+    "nvt",
+    "ptz",
+    "rtsp"
   ],
   "main": "dist/onvif-probe-rx-cjs.js",
   "module": "dist/onvif-probe-rx-esm.js",
