@@ -1,7 +1,7 @@
 import { createSocket, SocketType } from 'dgram'
-import { Observable, Observer, Subject, interval } from 'rxjs'
 import { AddressInfo } from 'net'
 import { startWith, filter, switchMap, mapTo } from 'rxjs/operators'
+import { Observable, Observer, Subject, interval } from 'rxjs'
 
 export interface SocketMessage {
   readonly buffer: Buffer
