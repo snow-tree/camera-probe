@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none;">onvif-probe-rx</h1>
-<h3 align="center">Continous monitoring of your home network ONVIF IP cameras.</h3>
+<h3 align="center">Continous monitoring of ONVIF IP cameras.</h3>
 <p align="center">
   <a href="https://circleci.com/gh/patrickmichalina/onvif-probe-rx">
     <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/onvif-probe-rx.svg?style=shield">
