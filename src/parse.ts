@@ -1,5 +1,5 @@
 import { IProbeConfig } from './config'
-import { IONVIFDevice } from './device'
+import { IONVIFDevice } from './onvif/device'
 import { maybe } from 'typescript-monads'
 
 const SCHEMAS = {

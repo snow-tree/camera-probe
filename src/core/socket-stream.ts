@@ -3,7 +3,7 @@ import { createSocket, SocketType } from 'dgram'
 import { Subject, timer } from 'rxjs'
 
 export const socketStream =
-  (type: SocketType = 'udp4') =>
+  (type: SocketType) =>
     (timeout: number) => {
       const socket = createSocket({ type })
       const stopSource = new Subject()
@@ -17,13 +17,13 @@ export const socketStream =
 
       socket.on('error', err => msgSource.error(err))
       socket.on('message', buffer => msgSource.next(buffer))
-
+      
       timer(timeout, timeout)
         .pipe(
           takeUntil(stopSource),
           repeatWhen(() => messages$)
         ).subscribe(_ => {
-          msgSource.error(new Error(`Timed out after ${timeout} miliseconds`))
+          msgSource.error(new Error(`Timed out after ${timeout}ms`))
           socket.close()
         })
 
