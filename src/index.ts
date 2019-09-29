@@ -3,7 +3,7 @@ import { timer, Observable, forkJoin, combineLatest, of } from 'rxjs'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
 import { maybe, reader, IMaybe } from 'typescript-monads'
 import { parseXmlResponse, maybeIpAddress } from './parse'
-import { socketStream } from './socket-stream'
+import { socketStream } from './core/socket-stream'
 import { probePayload } from './probe-payload'
 import { IONVIFDevice } from './device'
 export { IProbeConfig } from './config'
@@ -24,9 +24,9 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
 
   const ss = socketStream()(config.PROBE_NETWORK_TIMEOUT_MS)
 
-  const socketMessages = ss.stream
+  const socketMessages = ss.messages$
     .pipe(
-      map(a => a.buffer),
+      // map(a => a),
       distinctUntilChanged((a, b) => a.length === b.length && a !== b),
       map(buf => buf.length ? maybe<string>(buf.toString()) : maybe<string>())
     )

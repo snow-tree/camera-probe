@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "lib": ["es2015", "dom"],
     "outDir": "dist",
+    "esModuleInterop": true,
     "isolatedModules": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
