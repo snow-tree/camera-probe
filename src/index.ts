@@ -1,10 +1,9 @@
-import { map, distinctUntilChanged, takeUntil, mergeScan, flatMap } from 'rxjs/operators'
+import { map, distinctUntilChanged, takeUntil, mergeScan, flatMap, takeWhile } from 'rxjs/operators'
 import { timer, Observable, forkJoin, combineLatest, of } from 'rxjs'
 import { IProbeConfig, DEFAULT_CONFIG } from './config'
 import { maybe, reader, IMaybe } from 'typescript-monads'
 import { parseXmlResponse, maybeIpAddress } from './parse'
 import { socketStream } from './core/socket-stream'
-import { probePayload } from './onvif/probe-payload'
 import { IONVIFDevice } from './onvif/device'
 export { IProbeConfig } from './config'
 import { MD5 } from 'object-hash'
@@ -22,7 +21,7 @@ type ProbeStream = Observable<readonly IONVIFDevice[]>
 export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream>(partialConfig => {
   const config: IProbeConfig = { ...DEFAULT_CONFIG, ...partialConfig }
 
-  const ss = socketStream()(config.PROBE_NETWORK_TIMEOUT_MS)
+  const ss = socketStream('udp4')(config.PROBE_NETWORK_TIMEOUT_MS)
 
   const socketMessages = ss.messages$
     .pipe(
@@ -33,7 +32,7 @@ export const probeONVIFDevices = () => reader<Partial<IProbeConfig>, ProbeStream
 
   timer(config.PROBE_SAMPLE_START_DELAY_TIME_MS, config.PROBE_SAMPLE_TIME_MS)
     .pipe(
-      takeUntil(ss.stop),
+      take(ss.stop),
       map(_ => config.ONVIF_DEVICES
         .map(probePayload())
         .map(xml => Buffer.from(xml, 'utf8'))

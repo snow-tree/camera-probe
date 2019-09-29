@@ -1,7 +1,8 @@
 import { socketStream } from './socket-stream'
 import { createSocket } from 'dgram'
-import { skip, first } from 'rxjs/operators'
+import { skip, first, catchError } from 'rxjs/operators'
 import { Socket } from 'dgram'
+import { of } from 'rxjs'
 
 // this just returns the sent message from the client
 const initTestServer = (port = 41234) => {
@@ -43,21 +44,44 @@ describe('Socket Stream', () => {
       done()
     }, _err => expect(true).toEqual(false))
 
-    ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT, '0.0.0.0')
-    ss.socket.send(SAMPLE_MSG_BUFFER_2, 0, SAMPLE_MSG_BUFFER_2.length, PORT, '0.0.0.0')
+    ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT)
+    ss.socket.send(SAMPLE_MSG_BUFFER_2, 0, SAMPLE_MSG_BUFFER_2.length, PORT)
   })
 
-  it('should timeout', done => {
-    const TIMEOUT = 150
+  it.only('should send close event', done => {
+    const TIMEOUT = 5
     const ss = socketStream('udp4')(TIMEOUT)
 
-    ss.messages$.pipe(first()).subscribe(res => {
-      expect(true).toEqual(false)
+    ss.close$.pipe(first()).subscribe(res => {
+      // console.log(res)
+      // expect(true).toEqual(false)
+      done()
     }, (_err: Error) => {
-      expect(_err.message).toEqual(`Timed out after ${TIMEOUT}ms`)
+      // expect(_err.message).toEqual(`Timed out after ${TIMEOUT}ms`)
       done()
     })
+    // ss.socket.close()
+    // ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT)
+
   })
+
+  it('should handle timeouts', done => {
+    const TIMEOUT = 5
+    const ss = socketStream('udp4')(TIMEOUT)
+
+    ss.messages$.subscribe(res => {
+      expect(true).toEqual(false)
+    }, (err: Error) => {
+      expect(err.message).toEqual(`Timed out after ${TIMEOUT}ms`)
+      done()
+    })
+
+    setTimeout(() => {
+      ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT)
+    }, 10)
+  })
+
+  
 
 //   it.only('should', done => {
 //     const ss = socketStream('udp4')(5000)
