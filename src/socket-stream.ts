@@ -1,6 +1,6 @@
 import { createSocket, SocketType } from 'dgram'
 import { AddressInfo } from 'net'
-import { startWith, filter, switchMap, mapTo } from 'rxjs/operators'
+import { startWith, filter, switchMap, mapTo, takeUntil } from 'rxjs/operators'
 import { Observable, Observer, Subject, interval } from 'rxjs'
 
 export interface SocketMessage {
@@ -16,11 +16,12 @@ export const socketStream =
       const stop = stopSource.asObservable()
 
       const stream: Observable<SocketMessage> = Observable.create((obs: Observer<any>) => {
-        const reset = new Subject<any>()
+        const reset = new Subject()
         reset.pipe(
           startWith(true),
           switchMap(_ => interval(timeout).pipe(mapTo(true))),
-          filter(Boolean)
+          filter(Boolean),
+          takeUntil(stop)
         ).subscribe(() => {
           obs.next({
             buffer: Buffer.alloc(0),
@@ -39,6 +40,7 @@ export const socketStream =
 
         socket.on('close', (_: any) => {
           stopSource.next()
+          stopSource.complete()
           obs.complete()
         })
       })
