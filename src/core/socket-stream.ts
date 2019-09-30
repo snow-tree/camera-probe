@@ -5,6 +5,7 @@ import { ok, fail, IResult } from 'typescript-monads'
 
 type IMessage = readonly [Buffer, RemoteInfo]
 
+// urn:uuid:.*?<
 export const socketStream =
   (type: SocketType) =>
     (timeout: number) => {
@@ -12,7 +13,13 @@ export const socketStream =
       const close$ = fromEvent(socket, 'close').pipe(first())
       const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(
         map(a => a[0]),
-        distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
+        distinctUntilChanged((prev, curr) => {
+          const prevStr = prev.toString()
+          const currStr = curr.toString()
+          const prevUrn = prevStr.match(/urn:uuid:.*?</g)
+          const currUrn = currStr.match(/urn:uuid:.*?</g)
+          return prevStr === currStr || ((prevUrn && prevUrn[1]) === (currUrn && currUrn[1]))
+        } ),
         shareReplay(1)
       )
 
