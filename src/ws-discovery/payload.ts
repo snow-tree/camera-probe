@@ -1,4 +1,4 @@
-export const genWsDiscoveryProbePayload =
+export const generateWsDiscoveryProbePayload =
   (uuid: string) =>
     (type: string) =>
 `<?xml version="1.0" encoding="UTF-8"?>

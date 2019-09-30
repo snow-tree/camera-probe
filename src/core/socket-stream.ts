@@ -1,19 +1,17 @@
-import { map, takeUntil, repeatWhen, first, flatMap, shareReplay, tap } from 'rxjs/operators'
-import { createSocket, SocketType } from 'dgram'
-import { fromEvent, timer, race, throwError, of, bindNodeCallback, Subject } from 'rxjs'
-import { AddressInfo } from 'net'
+import { map, takeUntil, repeatWhen, first, shareReplay, tap } from 'rxjs/operators'
+import { createSocket, SocketType, RemoteInfo } from 'dgram'
+import { fromEvent, timer, race } from 'rxjs'
+import { ok, fail, IResult } from 'typescript-monads'
+
+type IMessage = readonly [Buffer, RemoteInfo]
 
 // tslint:disable:readonly-array
 export const socketStream =
   (type: SocketType) =>
     (timeout: number) => {
       const socket = createSocket({ type })
-      const close = new Subject()
-      const close$ = close.pipe(shareReplay(1))
-      socket.on('close', () => close.next())
-      // const close$ = fromEvent(socket, 'close').pipe(first(), tap(console.log))
-      // const error$ = fromEvent(socket, 'error').pipe(first())
-      const socketMessages$ = fromEvent<[Buffer, AddressInfo]>(socket, 'message').pipe(
+      const close$ = fromEvent(socket, 'close').pipe(first())
+      const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(
         map(a => a[0]),
         shareReplay(1)
       )
@@ -24,15 +22,16 @@ export const socketStream =
 
       const messages$ = race(socketMessages$, timeout$).pipe(
         tap(a => !(a instanceof Buffer) && socket.close()),
-        flatMap(a => a instanceof Buffer 
-          ? of(a) 
-          : throwError(new Error(`Timed out after ${timeout}ms`))),
+        map<Buffer | number, IResult<Buffer, string>>(a => a instanceof Buffer 
+          ? ok(a) 
+          : fail(`Timed out after ${timeout}ms`)),
         shareReplay(1))
+
+      messages$.pipe(takeUntil(close$)).subscribe()
 
       return {
         socket,
         messages$,
-        // error$,
         close$
       }
     }

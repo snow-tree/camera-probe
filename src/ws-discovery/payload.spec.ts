@@ -1,8 +1,8 @@
-import { genWsDiscoveryProbePayload } from './payload'
+import { generateWsDiscoveryProbePayload } from './payload'
 
 describe('Gen Payload', () => {
   it('should remove line breaks', () => {
-    const sut = genWsDiscoveryProbePayload('1234')('network-device')
+    const sut = generateWsDiscoveryProbePayload('1234')('network-device')
 
     expect(sut).toEqual(
 `<?xml version="1.0" encoding="UTF-8"?>
@@ -23,6 +23,5 @@ describe('Gen Payload', () => {
     </Probe>
   </Body>
 </Envelope>`)
-
   })
 })
