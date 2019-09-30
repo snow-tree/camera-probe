@@ -47,6 +47,22 @@ describe('Socket Stream', () => {
     ss.socket.send(SAMPLE_MSG_BUFFER_2, 0, SAMPLE_MSG_BUFFER_2.length, PORT)
   })
 
+  it('should recieve distinct messages', done => {
+    const ss = socketStream('udp4')(4000)
+    expect.assertions(1)
+
+    ss.messages$.pipe(first()).subscribe(res => {
+      expect(res.unwrap().toString()).toEqual(SAMPLE_MSG_1)
+      done()
+    })
+    
+    ss.messages$.pipe(skip(1)).subscribe(res => {
+      expect(res.unwrap().toString()).toEqual(SAMPLE_MSG_1)
+    })
+
+    ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT)
+    ss.socket.send(SAMPLE_MSG_BUFFER_1, 0, SAMPLE_MSG_BUFFER_1.length, PORT)
+  })
 
   it('should handle timeouts', done => {
     const TIMEOUT = 0
