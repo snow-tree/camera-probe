@@ -26,22 +26,26 @@ interface BufferPort {
 
 const mapStrXmlToBuffer = (str: string) => Buffer.from(str, 'utf8')
 const mapDeviceStrToPayload = (str: string) => generateWsDiscoveryProbePayload(str)(generateGuid())
-const xmlBuffers = ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
-  .map(mapDeviceStrToPayload)
-  .map(mapStrXmlToBuffer)
+const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDeviceStrToPayload).map(mapStrXmlToBuffer)
 
 export const flattenBuffersToPorts =
   (ports: readonly number[]) =>
-    (buffers: readonly Buffer[]) => ports.reduce((acc, port) =>
-      [...acc, ...buffers.map(buffer => ({ buffer, port, address: '239.255.255.250' }))], [] as readonly BufferPort[])
+    (buffers: readonly Buffer[]) =>
+      (address: string) =>
+        ports.reduce((acc, port) =>
+          [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
 export const exec = () => {
   const ss = socketStream('udp4')(25000)
   ss.messages$.subscribe(d => {
     console.log(d.unwrap().toString())
   })
+  const address = '239.255.255.250'
+  const ports: ReadonlyArray<number> = [3702]
+  const xmlBuffers = mapDevicesToPayloads(['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'])
+
   // return xmlBuffers
-  flattenBuffersToPorts([3702])(xmlBuffers).forEach(mdl => ss.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
+  flattenBuffersToPorts(ports)(xmlBuffers)(address).forEach(mdl => ss.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
 }
 
 
