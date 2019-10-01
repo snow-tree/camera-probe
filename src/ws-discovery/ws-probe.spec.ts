@@ -14,7 +14,7 @@ const initTestServer = (port: number) => {
   return server
 }
 
-describe('Probe', () => {
+describe('ws probe', () => {
   it('should probe basic, no distinct guard', done => {
     // config
     const port = 41231

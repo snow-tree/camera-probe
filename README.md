@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none;">camera-probe</h1>
-<h3 align="center">Realtime Open Network Video Interface Forum (ONVIF) device discovery and camera detection.</h3>
+<h3 align="center">Realtime scanning and discovery of networked cameras.</h3>
 <p align="center">
   <a href="https://circleci.com/gh/patrickmichalina/camera-probe">
     <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/camera-probe.svg?style=shield">

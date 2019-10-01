@@ -15,6 +15,7 @@ export const socketStream = (type: SocketType, timeout: number, distinctFilterFn
   const socket = createSocket({ type })
   const close$ = fromEvent<void>(socket, 'close').pipe(first())
   const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(
+    tap(console.log),
     map(a => a[0]),
     distinctUntilChanged((prev, curr) => (typeof distinctFilterFn === 'function' && !!distinctFilterFn(prev.toString(), curr.toString()))),
     shareReplay(1)

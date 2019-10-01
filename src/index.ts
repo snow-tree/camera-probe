@@ -12,6 +12,28 @@
 // export { IONVIFDevice }
 // export { DEFAULT_CONFIG }
 
+// interface IReponse {
+//   devices: [
+//     {
+//       raw: 'string',
+//       document: 'Maybe<Document>',
+//       device,
+//       scanType: 'discovery' | 'ipscan',
+//       protocol: 'onvif' | 'upnp' | 'mdns'
+//     }
+//   ]
+// }
+
+
+
+
+
+
+
+
+
+
+
 // const uniqueObjects =
 //   (arr: readonly any[]) =>
 //     arr.filter((object, index) => index === arr.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)))

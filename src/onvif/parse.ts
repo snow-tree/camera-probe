@@ -8,7 +8,7 @@ const SCHEMAS = {
 
 export const maybeIpAddress = (str: string) => maybe(str.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)).map(a => a[0])
 
-export const xmlToOnvifDevice = (doc: Document) => (notfoundStr = ''): IOnvifDevice => {
+export const xmlToOnvifDevice = (doc: Document) => (notfoundStr = 'unknown'): IOnvifDevice => {
   const simpleParse = (elm: Document | Element) => (ns: string) => (node: string) => maybe(elm.getElementsByTagNameNS(ns, node).item(0))
   const maybeRootProbeElement = maybe(doc.getElementsByTagNameNS(SCHEMAS.discovery, 'ProbeMatch').item(0))
 
