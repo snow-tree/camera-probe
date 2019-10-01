@@ -33,7 +33,7 @@ export const flattenBuffersWithInfo =
         ports.reduce((acc, port) =>
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
-export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream(c.protocol, c.probeTimeoutMs, c.distinctFilterFn))
+export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream('udp4', c.probeTimeoutMs, c.distinctFilterFn))
 
 export const probe =
   (socket: ISocketStream) =>

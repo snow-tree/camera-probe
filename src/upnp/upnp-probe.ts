@@ -7,7 +7,7 @@ import { probe } from '../core/probe'
 import { map } from 'rxjs/operators'
 import { TimestampMessages } from '../core/interfaces'
 
-// TODO
+// TODO!!!
 const upnpDiscoveryParseToDict =
   (msg: TimestampMessages) =>
     msg.reduce((acc, item) => {
@@ -30,7 +30,6 @@ const upnpDiscoveryParseToDict =
             }
           }
         })
-console.log(z)
         return z
     }, {})
 

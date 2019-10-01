@@ -19,14 +19,10 @@ describe('ws probe', () => {
     // config
     const port = 41231
     const config: IProbeConfig = {
-      ports: [port],
-      address: '0.0.0.0',
-      protocol: 'udp4',
       probeTimeoutMs: 1000,
       falloutMs: 1000,
       sampleIntervalMs: 5000,
-      DOM_PARSER: new DOMParser(),
-      onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
+      DOM_PARSER: new DOMParser()
     }
 
     initTestServer(port)
@@ -46,14 +42,10 @@ describe('ws probe', () => {
     jest.setTimeout(7000)
     const port = 3702
     const config: IProbeConfig = {
-      ports: [port],
-      address: '239.255.255.250',
-      protocol: 'udp4',
       probeTimeoutMs: 10000,
       falloutMs: 1000,
       sampleIntervalMs: 5000,
-      DOM_PARSER: new DOMParser(),
-      onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
+      DOM_PARSER: new DOMParser()
     }
 
     initTestServer(port)
@@ -61,7 +53,7 @@ describe('ws probe', () => {
       .subscribe(res => {
         console.log(res)
         // expect((res[0].match(/uuid:.*?</) as any)[0]).toEqual('uuid:NetworkVideoTransmitter<')
-        // done()
+        done()
       })
   })
 })
