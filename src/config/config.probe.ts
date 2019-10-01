@@ -31,8 +31,6 @@ export interface IProbeConfig {
 
   readonly distinctFilterFn?: (prev: string, curr: string) => boolean
 
-  readonly mapStrToDictFn: (msg: TimestampMessages) => StringDictionary
-  
   /**
    * ONVIF device types to check for.
    */
@@ -64,19 +62,11 @@ export interface IProbeConfig {
   //  */
   // readonly NOT_FOUND_STRING: string
 
-  // /**
-  //  * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
-  //  */
-  // readonly DOM_PARSER: DOMParser
+  /**
+   * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
+   */
+  readonly DOM_PARSER: DOMParser
 }
 
 
 
-  // const wsDiscoveryParseToDict =
-  //   (msg: TimestampMessages) =>
-  //     msg.reduce((acc, item) =>
-  //       maybe(item.msg.match(/urn:uuid:.*?</g))
-  //         .flatMapAuto(a => a[0].replace('<', '').split(':').pop())
-  //         .filter(key => !acc[key])
-  //         .map(key => ({ ...acc, [key]: item.msg }))
-  //         .valueOr(acc), {} as StringDictionary)

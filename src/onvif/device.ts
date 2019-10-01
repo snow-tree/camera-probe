@@ -1,6 +1,6 @@
 import { Strings } from '../core/interfaces'
 
-export interface IONVIFDevice {
+export interface IOnvifDevice {
   readonly hardware: string
   readonly location: string
   readonly name: string
