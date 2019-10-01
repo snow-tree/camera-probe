@@ -1,5 +1,5 @@
 import { DOMParser } from 'xmldom'
-import { TimestampMessages, StringDictionary } from '../core/interfaces'
+import { TimestampMessages, StringDictionary, Numbers } from '../core/interfaces'
 
 /**
  * Probe configuration
@@ -13,6 +13,12 @@ export interface IProbeConfig {
   readonly falloutMs: number
   readonly sampleIntervalMs: number
   readonly distinctFilterFn?: (prev: string, curr: string) => boolean
+
+  readonly address: string
+  readonly ports: {
+    readonly upnp: Numbers
+    readonly wsDiscovery: Numbers
+  }
 
   // /**
   //  * How frequent, in milliseconds, the network is scanned for devices.

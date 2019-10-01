@@ -13,11 +13,12 @@ const initTestServer = (port: number) => {
 }
 
 describe('onvif-probe', () => {
-  it.only('should work', done => {
+  it.skip('should work', done => {
     // config
-    jest.setTimeout(7000)
-    const port = 3702
+    const port = 41238
     const config: IProbeConfig = {
+      ports: { upnp: [], wsDiscovery: [port] },
+      address: '239.255.255.250',
       probeTimeoutMs: 10000,
       falloutMs: 1000,
       sampleIntervalMs: 5000,

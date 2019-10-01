@@ -42,7 +42,7 @@ ST: ssdp:all`
 
 export const upnpProbe = (ss: ISocketStream) => 
   reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)([1900])('239.255.255.250')([query])(upnpDiscoveryParseToDict)
+    probe(ss)(cfg.ports.upnp)('239.255.255.250')([query])(upnpDiscoveryParseToDict)
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {
