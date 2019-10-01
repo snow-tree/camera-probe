@@ -32,7 +32,7 @@ describe('Socket Stream', () => {
   afterEach(() => svr.close())
 
   it('should recieve messages', done => {
-    const ss = socketStream('udp4')(4000)
+    const ss = socketStream('udp4', 4000)
 
     ss.messages$.pipe(first()).subscribe(res => {
       expect(res.unwrap().toString()).toEqual(SAMPLE_MSG_1)
@@ -48,7 +48,7 @@ describe('Socket Stream', () => {
   })
 
   it('should recieve distinct messages', done => {
-    const ss = socketStream('udp4')(4000)
+    const ss = socketStream('udp4', 4000)
     expect.assertions(1)
 
     ss.messages$.pipe(first()).subscribe(res => {
@@ -66,7 +66,7 @@ describe('Socket Stream', () => {
 
   it('should handle timeouts', done => {
     const TIMEOUT = 0
-    const ss = socketStream('udp4')(TIMEOUT)
+    const ss = socketStream('udp4', TIMEOUT)
 
     ss.messages$.subscribe(res => {
       expect(res.unwrapFail()).toEqual(`Timed out after ${TIMEOUT}ms`)
@@ -75,7 +75,7 @@ describe('Socket Stream', () => {
   })
 
   it('should send close event', done => {
-    socketStream('udp4')(0).close$.subscribe(_ => {
+    socketStream('udp4', 0).close$.subscribe(_ => {
       expect(true).toEqual(true)
       done()
     })

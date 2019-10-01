@@ -1,22 +1,10 @@
-import { socketStream } from '../core/socket-stream'
+import { ISocketStream, socketStream } from '../core/socket-stream'
 import { generateWsDiscoveryProbePayload } from './payload'
 import { generateGuid } from '../core/guid'
-
-// export const DEFAULT_CONFIG: IProbeConfig = {
-//   PORTS: [139, 445, 1124, 3702],
-//   IP_SCANNER: {
-//     ENABLED: true,
-//     IP_ADDRESSES: [],
-//     PREFIXES: []
-//   },
-//   MULTICAST_ADDRESS: '239.255.255.250',
-//   PROBE_SAMPLE_TIME_MS: 2000,
-//   PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
-//   PROBE_NETWORK_TIMEOUT_MS: 2000 * 1.5,
-//   ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
-//   DOM_PARSER: new DOMParser(),
-//   NOT_FOUND_STRING: 'unknown'
-// }
+import { map, filter, scan, distinctUntilChanged, takeUntil } from 'rxjs/operators'
+import { interval, Observable, timer } from 'rxjs'
+import { reader, maybe, IResult } from 'typescript-monads'
+import { IProbeConfig } from '../config/config.probe'
 
 interface BufferPort {
   readonly buffer: Buffer
@@ -28,37 +16,52 @@ const mapStrXmlToBuffer = (str: string) => Buffer.from(str, 'utf8')
 const mapDeviceStrToPayload = (str: string) => generateWsDiscoveryProbePayload(str)(generateGuid())
 const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDeviceStrToPayload).map(mapStrXmlToBuffer)
 
-export const flattenBuffersToPorts =
+export const flattenBuffersWithInfo =
   (ports: readonly number[]) =>
     (buffers: readonly Buffer[]) =>
       (address: string) =>
         ports.reduce((acc, port) =>
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
-export const exec = () => {
-  const ss = socketStream('udp4')(25000)
-  ss.messages$.subscribe(d => {
-    console.log(d.unwrap().toString())
-  })
-  const address = '239.255.255.250'
-  const ports: ReadonlyArray<number> = [3702]
-  const xmlBuffers = mapDevicesToPayloads(['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'])
+export const initSocketStream =
+  reader<IProbeConfig, ISocketStream>(cfg => socketStream(cfg.protocol, cfg.probeTimeoutMs, cfg.distinctFilterFn))
 
-  // return xmlBuffers
-  flattenBuffersToPorts(ports)(xmlBuffers)(address).forEach(mdl => ss.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
+interface DT {
+  readonly msg: string
+  readonly ts: number
 }
+type ct = readonly DT[]
+type ReadonlyStrings = readonly string[]
 
+const distinctUntilObjectChanged = <T>(source: Observable<T>) => source.pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
+const toArrayOfValues = <T extends { readonly [key: string]: any }>(source: Observable<T>) => source.pipe(map(a => Object.keys(a).map(b => a[b])))
+const filterOkResults = <TOk, TFail>(source: Observable<IResult<TOk, TFail>>) => source.pipe(filter(a => a.isOk()))
 
-// timer(0, 2000)
-//   .pipe(
-//     takeUntil(ss.close$),
-//     map(_ => ['']
-//       .map(generateWsDiscoveryProbePayload(''))
-//       .map(xml => Buffer.from(xml, 'utf8'))
-//     )
-//   )
-//   .subscribe(buffers => {
-//     [1900].forEach(port => {
-//       buffers.forEach(b => ss.socket.send(b, 0, b.length, port, ''))
-//     })
-//   })
+export const probe = (socket: ISocketStream) => reader<IProbeConfig, Observable<any>>(cfg => {
+  const falloutTime = 1000
+  // this should be interval based to keep polling?
+  interval(5000).pipe(takeUntil(socket.close$)).subscribe(() => {
+    flattenBuffersWithInfo(cfg.ports)(mapDevicesToPayloads(cfg.onvifDeviceTypes))(cfg.address)
+      .forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
+  })
+
+  
+
+  return socket.messages$.pipe(
+    filterOkResults,
+    map(a => ({ msg: a.unwrap().toString(), ts: Date.now() })),
+    scan((acc, val) => [...acc, val].filter(a => a.ts > Date.now() - falloutTime), [] as ct),
+    map(a => a.reduce((acc, item) => {
+      return maybe(item.msg.match(/urn:uuid:.*?</g)).flatMapAuto(a => a[0].replace('<', '').split(':').pop())
+        .filter(key => !acc[key])
+        .map(key => {
+          return {
+            ...acc,
+            [key]: item.msg
+          }
+        }).valueOr(acc)
+    }, {} as { readonly [key: string]: string})),
+    distinctUntilObjectChanged,
+    toArrayOfValues
+  )
+})
