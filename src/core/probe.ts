@@ -37,21 +37,23 @@ export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketS
 
 export const probe =
   (socket: ISocketStream) =>
-    (messagesToSend: Strings = []) =>
-      (mapFn: (msg: readonly TimestampedMessage[]) => StringDictionary) =>
-        reader<IProbeConfig, Observable<Strings>>(c => {
-          interval(c.sampleIntervalMs).pipe(
-            mapTo(flattenBuffersWithInfo(c.ports)(c.address)(messagesToSend.map(mapStringToBuffer))),
-            takeUntil(socket.close$))
-            .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
+    (ports: Numbers) =>
+      (address: string) =>
+        (messagesToSend: Strings = []) =>
+          (mapFn: (msg: readonly TimestampedMessage[]) => StringDictionary) =>
+            reader<IProbeConfig, Observable<Strings>>(cfg => {
+              interval(cfg.sampleIntervalMs).pipe(
+                mapTo(flattenBuffersWithInfo(ports)(address)(messagesToSend.map(mapStringToBuffer))),
+                takeUntil(socket.close$))
+                .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
-          return socket.messages$.pipe(
-            filterOkResults,
-            timestamp,
-            accumulateFreshMessages(c.falloutMs),
-            mapStrToDictionary(mapFn),
-            distinctUntilObjectChanged,
-            toArrayOfValues,
-            flattenDocumentStrings
-          )
-        })
+              return socket.messages$.pipe(
+                filterOkResults,
+                timestamp,
+                accumulateFreshMessages(cfg.falloutMs),
+                mapStrToDictionary(mapFn),
+                distinctUntilObjectChanged,
+                toArrayOfValues,
+                flattenDocumentStrings
+              )
+            })

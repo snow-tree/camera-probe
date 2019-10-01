@@ -5,13 +5,13 @@ import { Observable } from 'rxjs'
 import { IWsResponses } from '../ws-discovery/ws-probe'
 import { probe } from '../core/probe'
 import { map } from 'rxjs/operators'
-import { TimestampMessages, StringDictionary } from '../core/interfaces'
+import { TimestampMessages } from '../core/interfaces'
 
 // TODO
 const upnpDiscoveryParseToDict =
   (msg: TimestampMessages) =>
     msg.reduce((acc, item) => {
-      const d = item.msg.split('\r\n').filter(a => a !== '' && a !== '\r' && !a.match(/HTTP\//i)).reduce((acc, curr) => {
+      const obj: any = item.msg.split('\r\n').filter(a => a !== '' && a !== '\r' && !a.match(/HTTP\//i)).reduce((acc, curr) => {
         const split = curr.split(':')
         const key = split[0]
         const val = split.slice(1).join(':').trim()
@@ -20,19 +20,21 @@ const upnpDiscoveryParseToDict =
           [key]: val
         } : acc
       }, {})
-      // console.log(d)
-      return {
-        ...acc,
-        [1]: item.msg
-      }
+      const z = maybe(obj['Location'])
+        .match({
+          none: () => acc,
+          some: i => {
+            return {
+              ...acc,
+              [i]: ''
+            }
+          }
+        })
+console.log(z)
+        return z
     }, {})
-      // maybe(item.msg.match(/urn:uuid:.*?</g))
-      //   .flatMapAuto(a => a[0].replace('<', '').split(':').pop())
-      //   .filter(key => !acc[key])
-      //   .map(key => ({ ...acc, [key]: item.msg }))
-      //   .valueOr(acc), {} as StringDictionary)
 
-const query = (port: number) => (address: string) => 
+const query = 
 `M-SEARCH * HTTP/1.1
 HOST: 239.255.255.250:1900
 MAN: ssdp:discover
@@ -41,12 +43,12 @@ ST: ssdp:all`
 
 export const upnpProbe = (ss: ISocketStream) => 
   reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)([query(1900)('239.255.255.250')])(upnpDiscoveryParseToDict)
+    probe(ss)([1900])('239.255.255.250')([query])(upnpDiscoveryParseToDict)
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {
             raw,
-            doc: cfg.DOM_PARSER.parseFromString(raw)
+            doc: '' as any
           }
         })
       })))

@@ -1,8 +1,7 @@
 import { socketStream } from './socket-stream'
 import { createSocket } from 'dgram'
-import { skip, first, catchError,  } from 'rxjs/operators'
+import { skip, first } from 'rxjs/operators'
 import { Socket } from 'dgram'
-import { timer } from 'rxjs'
 
 // this just returns the sent message from the client
 const initTestServer = (port = 41234) => {

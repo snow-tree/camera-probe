@@ -1,7 +1,5 @@
 import { createSocket } from 'dgram'
 import { IProbeConfig } from '../config/config.probe'
-import { first, skip, take } from 'rxjs/operators'
-import { combineLatest } from 'rxjs'
 import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
 import { upnpProbe } from './upnp-probe'
@@ -14,9 +12,8 @@ const initTestServer = (port: number) => {
   return server
 }
 
-describe('upnp probe', () => {
+describe.skip('upnp probe', () => {
   it.skip('ddddd', done => {
-    // jest.setTimeout(10000)
     // config
     const port = 1900
     const config: IProbeConfig = {

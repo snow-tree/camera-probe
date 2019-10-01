@@ -28,7 +28,7 @@ const wsDiscoveryParseToDict =
 
 export const wsProbe = (ss: ISocketStream) => 
   reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)(mapDevicesToPayloads(cfg.onvifDeviceTypes))(wsDiscoveryParseToDict)
+    probe(ss)([3702])('239.255.255.250')(mapDevicesToPayloads(cfg.onvifDeviceTypes))(wsDiscoveryParseToDict)
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {
