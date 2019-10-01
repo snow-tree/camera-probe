@@ -56,17 +56,10 @@ describe('Probe', () => {
     // config
     jest.setTimeout(7000)
     const port = 3702
-    const distinctFilterFn = (prev: string, curr: string) => {
-      const prevUrn = prev.match(/urn:uuid:.*?</g)
-      const currUrn = curr.match(/urn:uuid:.*?</g)
-      return ((prevUrn && prevUrn[1]) === (currUrn && currUrn[1]))
-    }
-
     const config: IProbeConfig = {
       ports: [port],
       address: '239.255.255.250',
       protocol: 'udp4',
-      // distinctFilterFn,
       probeTimeoutMs: 10000,
       falloutMs: 1000,
       onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']

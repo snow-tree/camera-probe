@@ -4,6 +4,7 @@ import { fromEvent, timer, race, Observable } from 'rxjs'
 import { ok, fail, IResult } from 'typescript-monads'
 
 type IMessage = readonly [Buffer, RemoteInfo]
+
 export interface ISocketStream {
   readonly socket: Socket
   readonly messages$: Observable<IResult<Buffer, string>>
