@@ -1,4 +1,4 @@
-import { Strings } from '../common/interfaces'
+import { Strings } from '../core/interfaces'
 
 export interface IONVIFDevice {
   readonly hardware: string

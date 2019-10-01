@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none;">onvif-probe-rx</h1>
-<h3 align="center">Continous monitoring of ONVIF IP cameras.</h3>
+<h3 align="center">Realtime Open Network Video Interface Forum (ONVIF) device discovery and camera detection.</h3>
 <p align="center">
   <a href="https://circleci.com/gh/patrickmichalina/onvif-probe-rx">
     <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/onvif-probe-rx.svg?style=shield">
@@ -31,9 +31,8 @@
   </a>
 </p>
 
-
 ## Installation
-This package is designed to be run in a Node environment. For the best developer experience use Typescript.
+This package is designed to be run in Node. For the best developer experience use Typescript.
 ```sh
 $ npm i onvif-probe-rx
 ```

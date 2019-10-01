@@ -1,4 +1,5 @@
 import { DOMParser } from 'xmldom'
+import { TimestampMessages, StringDictionary } from '../core/interfaces'
 
 /**
  * Probe configuration
@@ -26,16 +27,16 @@ export interface IProbeConfig {
   readonly probeTimeoutMs: number
 
   readonly falloutMs: number
+  readonly sampleIntervalMs: number
 
   readonly distinctFilterFn?: (prev: string, curr: string) => boolean
+
+  readonly mapStrToDictFn: (msg: TimestampMessages) => StringDictionary
   
   /**
    * ONVIF device types to check for.
    */
   readonly onvifDeviceTypes: readonly string[]
-
-
-  
 
   // /**
   //  * How frequent, in milliseconds, the network is scanned for devices.
@@ -68,3 +69,14 @@ export interface IProbeConfig {
   //  */
   // readonly DOM_PARSER: DOMParser
 }
+
+
+
+  // const wsDiscoveryParseToDict =
+  //   (msg: TimestampMessages) =>
+  //     msg.reduce((acc, item) =>
+  //       maybe(item.msg.match(/urn:uuid:.*?</g))
+  //         .flatMapAuto(a => a[0].replace('<', '').split(':').pop())
+  //         .filter(key => !acc[key])
+  //         .map(key => ({ ...acc, [key]: item.msg }))
+  //         .valueOr(acc), {} as StringDictionary)

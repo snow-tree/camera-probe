@@ -1,12 +1,15 @@
 import { map, filter, scan, distinctUntilChanged, takeUntil, mapTo } from 'rxjs/operators'
-import { generateWsDiscoveryProbePayload } from './payload'
 import { ISocketStream, socketStream } from '../core/socket-stream'
-import { reader, maybe, IResult } from 'typescript-monads'
+import { reader, IResult } from 'typescript-monads'
 import { interval, Observable } from 'rxjs'
 import { IProbeConfig } from '../config/config.probe'
-import { generateGuid } from '../core/guid'
-import { Strings, Numbers, StringDictionary, TimestampedMessage, TimestampMessages } from '../core/interfaces'
+import { Strings, Numbers } from '../core/interfaces'
+// import { generateWsDiscoveryProbePayload } from './payload'
+// import { generateGuid } from '../core/guid'
 
+type TimestampMessages = readonly TimestampedMessage[]
+type StringDictionary = { readonly [key: string]: string }
+interface TimestampedMessage { readonly msg: string, readonly ts: number }
 interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly address: string }
 
 interface Response {
@@ -16,8 +19,7 @@ interface Response {
 
 const flattenXml = (str: string) => str.replace(/>\s*/g, '>').replace(/\s*</g, '<')
 const mapStringToBuffer = (str: string) => Buffer.from(str, 'utf8')
-const mapDeviceStrToPayload = (str: string) => generateWsDiscoveryProbePayload(str)(generateGuid())
-const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDeviceStrToPayload).map(mapStringToBuffer)
+// const mapDevicesToPayloads = (devices: Strings) => devices.map(mapDeviceStrToPayload).map(mapStringToBuffer)
 const distinctUntilObjectChanged = <T>(source: Observable<T>) => source.pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
 const toArrayOfValues = <T extends StringDictionary>(source: Observable<T>) => source.pipe(map(a => Object.keys(a).map(b => a[b])))
 const flattenDocumentStrings = (source: Observable<Strings>) => source.pipe(map(a => a.map(flattenXml)))
@@ -34,16 +36,17 @@ const mapStrToDictionary =
 
 export const flattenBuffersWithInfo =
   (ports: Numbers) =>
-    (buffers: readonly Buffer[]) =>
-      (address: string) =>
+    (address: string) =>
+      (buffers: readonly Buffer[]) =>
         ports.reduce((acc, port) =>
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
 export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream(c.protocol, c.probeTimeoutMs, c.distinctFilterFn))
 
 export const probe = (socket: ISocketStream) => reader<IProbeConfig, Observable<Strings>>(c => {
+  const bufferStrings: Strings = []
   interval(c.sampleIntervalMs).pipe(
-    mapTo(flattenBuffersWithInfo(c.ports)(mapDevicesToPayloads(c.onvifDeviceTypes))(c.address)),
+    mapTo(flattenBuffersWithInfo(c.ports)(c.address)(bufferStrings.map(mapStringToBuffer))),
     takeUntil(socket.close$))
     .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
