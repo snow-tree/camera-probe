@@ -1,3 +1,5 @@
+import { Strings } from '../common/interfaces'
+
 export interface IONVIFDevice {
   readonly hardware: string
   readonly location: string
@@ -6,7 +8,7 @@ export interface IONVIFDevice {
   readonly ip: string
   readonly metadataVersion: string
   readonly deviceServiceUri: string
-  readonly profiles: readonly string[]
-  readonly xaddrs: readonly string[]
-  readonly scopes: readonly string[]
+  readonly profiles: Strings
+  readonly xaddrs: Strings
+  readonly scopes: Strings
 }

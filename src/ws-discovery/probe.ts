@@ -5,13 +5,19 @@ import { reader, maybe, IResult } from 'typescript-monads'
 import { interval, Observable } from 'rxjs'
 import { IProbeConfig } from '../config/config.probe'
 import { generateGuid } from '../core/guid'
+import { Strings, Numbers } from '../common/interfaces'
 
 type TimestampMessages = readonly TimestampedMessage[]
 type StringDictionary = { readonly [key: string]: string }
-type Strings = readonly string[]
 interface TimestampedMessage { readonly msg: string, readonly ts: number }
 interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly address: string }
 
+interface Response {
+  readonly raw: string
+  // readonly parsed: DOM
+}
+
+const flattenXml = (str: string) => str.replace(/>\s*/g, '>').replace(/\s*</g, '<')
 const mapStrXmlToBuffer = (str: string) => Buffer.from(str, 'utf8')
 const mapDeviceStrToPayload = (str: string) => generateWsDiscoveryProbePayload(str)(generateGuid())
 const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDeviceStrToPayload).map(mapStrXmlToBuffer)
@@ -25,7 +31,7 @@ const accumulateFreshMessages =
       source.pipe(scan((acc, val) => [...acc, val].filter(a => a.ts > Date.now() - falloutTime), [] as TimestampMessages))
 
 export const flattenBuffersWithInfo =
-  (ports: readonly number[]) =>
+  (ports: Numbers) =>
     (buffers: readonly Buffer[]) =>
       (address: string) =>
         ports.reduce((acc, port) =>
@@ -34,11 +40,10 @@ export const flattenBuffersWithInfo =
 export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream(c.protocol, c.probeTimeoutMs, c.distinctFilterFn))
 
 export const probe = (socket: ISocketStream) => reader<IProbeConfig, Observable<Strings>>(c => {
-  // this should be interval based to keep polling?
-  interval(5000).pipe(takeUntil(socket.close$)).subscribe(() => {
-    flattenBuffersWithInfo(c.ports)(mapDevicesToPayloads(c.onvifDeviceTypes))(c.address)
-      .forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
-  })
+  interval(5000).pipe(
+    map(() => flattenBuffersWithInfo(c.ports)(mapDevicesToPayloads(c.onvifDeviceTypes))(c.address)),
+    takeUntil(socket.close$))
+    .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
   return socket.messages$.pipe(
     filterOkResults,
@@ -51,6 +56,7 @@ export const probe = (socket: ISocketStream) => reader<IProbeConfig, Observable<
         .map(key => ({ ...acc, [key]: item.msg }))
         .valueOr(acc), {} as StringDictionary)),
     distinctUntilObjectChanged,
-    toArrayOfValues
+    toArrayOfValues,
+    map(a => a.map(flattenXml))
   )
 })
