@@ -1,17 +1,17 @@
 {
-  "name": "onvif-probe-rx",
+  "name": "camera-probe",
   "version": "0.0.0-development",
-  "description": "Realtime Open Network Video Interface Forum (ONVIF) device discovery and camera detection.",
+  "description": "Realtime scanning and discovery of networked cameras.",
   "author": "Patrick Michalina <patrickmichalina@mac.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patrickmichalina/onvif-probe-rx.git"
+    "url": "git+https://github.com/patrickmichalina/camera-probe.git"
   },
   "bugs": {
-    "url": "https://github.com/patrickmichalina/onvif-probe-rx/issues"
+    "url": "https://github.com/patrickmichalina/camera-probe/issues"
   },
-  "homepage": "https://github.com/patrickmichalina/onvif-probe-rx#readme",
+  "homepage": "https://github.com/patrickmichalina/camera-probe#readme",
   "keywords": [
     "onvif",
     "camera",
@@ -26,8 +26,8 @@
     "ptz",
     "rtsp"
   ],
-  "main": "dist/onvif-probe-rx-cjs.js",
-  "module": "dist/onvif-probe-rx-esm.js",
+  "main": "dist/camera-probe-cjs.js",
+  "module": "dist/camera-probe-esm.js",
   "types": "dist/index.d.ts",
   "bin": {
     "onvif-probe": "dist/onvif-probe"

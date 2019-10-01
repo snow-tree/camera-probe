@@ -1,46 +1,46 @@
-<h1 align="center" style="border-bottom: none;">onvif-probe-rx</h1>
+<h1 align="center" style="border-bottom: none;">camera-probe</h1>
 <h3 align="center">Realtime Open Network Video Interface Forum (ONVIF) device discovery and camera detection.</h3>
 <p align="center">
-  <a href="https://circleci.com/gh/patrickmichalina/onvif-probe-rx">
-    <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/onvif-probe-rx.svg?style=shield">
+  <a href="https://circleci.com/gh/patrickmichalina/camera-probe">
+    <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/camera-probe.svg?style=shield">
   </a>
-  <!-- <a href="https://codeclimate.com/github/patrickmichalina/onvif-probe-rx/test_coverage">
+  <a href="https://codeclimate.com/github/patrickmichalina/camera-probe/test_coverage">
     <img src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/test_coverage" />
   </a>
-  <a href="https://codeclimate.com/github/patrickmichalina/onvif-probe-rx/maintainability">
+  <a href="https://codeclimate.com/github/patrickmichalina/camera-probe/maintainability">
     <img alt="codeclimate" src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/maintainability">
-  </a> -->
+  </a>
 </p>
 <p align="center">
   <a href="https://greenkeeper.io">
     <img alt="greenkeeper" src="https://badges.greenkeeper.io/semantic-release/semantic-release.svg">
   </a>
-  <a href="https://david-dm.org/patrickmichalina/onvif-probe-rx">
-    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/onvif-probe-rx/status.svg">
+  <a href="https://david-dm.org/patrickmichalina/camera-probe">
+    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/camera-probe/status.svg">
   </a>
-  <a href="https://david-dm.org/patrickmichalina/onvif-probe-rx?type=dev">
-    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/onvif-probe-rx/dev-status.svg">
+  <a href="https://david-dm.org/patrickmichalina/camera-probe?type=dev">
+    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/camera-probe/dev-status.svg">
   </a>
 </p>
 <p align="center">
   <a href="https://github.com/semantic-release/semantic-release">
     <img alt="semantic-release" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg">
   </a>
-  <a href="https://www.npmjs.com/package/onvif-probe-rx">
-    <img alt="npm latest version" src="https://img.shields.io/npm/v/onvif-probe-rx/latest.svg">
+  <a href="https://www.npmjs.com/package/camera-probe">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/camera-probe/latest.svg">
   </a>
 </p>
 
 ## Installation
 This package is designed to be run in Node. For the best developer experience use Typescript.
 ```sh
-$ npm i onvif-probe-rx
+$ npm i camera-probe
 ```
 
 ## CLI
 For CLI usage its easier to install globally like so:
 ```sh
-$ npm i -g onvif-probe-rx
+$ npm i -g camera-probe
 
 // starting listening
 $ onvif-probe
@@ -49,7 +49,7 @@ $ onvif-probe
 ## Usage
 Starts probing the network using the default configuration.
 ```ts
-import { startProbingONVIFDevices } from 'onvif-probe-rx'
+import { startProbingONVIFDevices } from 'camera-probe'
 
 startProbingONVIFDevices()
   .subscribe(console.info)
@@ -97,7 +97,7 @@ startProbingONVIFDevices()
 If you'd like to tweak default settings feel free to override in the `.run()` method.
 
 ```ts
-import { probeONVIFDevices } from 'onvif-probe-rx'
+import { probeONVIFDevices } from 'camera-probe'
 
 probeONVIFDevices()
   .run({
