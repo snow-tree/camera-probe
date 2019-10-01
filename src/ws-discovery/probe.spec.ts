@@ -35,6 +35,7 @@ describe('Probe', () => {
       address: '0.0.0.0',
       protocol: 'udp4',
       probeTimeoutMs: 1000,
+      falloutMs: 1000,
       onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
     }
 
@@ -67,6 +68,7 @@ describe('Probe', () => {
       protocol: 'udp4',
       // distinctFilterFn,
       probeTimeoutMs: 10000,
+      falloutMs: 1000,
       onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
     }
 

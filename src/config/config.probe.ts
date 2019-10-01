@@ -25,6 +25,8 @@ export interface IProbeConfig {
    */
   readonly probeTimeoutMs: number
 
+  readonly falloutMs: number
+
   readonly distinctFilterFn?: (prev: string, curr: string) => boolean
   
   /**
