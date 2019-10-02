@@ -19,14 +19,13 @@ const initTestServer = (port: number) => {
 
 describe('onvif-probe', () => {
   it('should work', done => {
-    // config
     const port = 41240
     const config: IProbeConfig = {
       ports: { upnp: [], wsDiscovery: [port] },
       address: '0.0.0.0',
-      probeTimeoutMs: 2000,
+      probeTimeoutMs: 3000,
       falloutMs: 5000,
-      sampleIntervalMs: 1000,
+      sampleIntervalMs: 50,
       DOM_PARSER: new DOMParser()
     }
 
