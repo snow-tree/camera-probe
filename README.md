@@ -43,16 +43,15 @@ For CLI usage its easier to install globally like so:
 $ npm i -g camera-probe
 
 // starting listening
-$ onvif-probe
+$ camera-probe
 ```
 
 ## Usage
 Starts probing the network using the default configuration.
 ```ts
-import { startProbingONVIFDevices } from 'camera-probe'
+import { devices$ } from 'camera-probe'
 
-startProbingONVIFDevices()
-  .subscribe(console.info)
+devices$().subscribe(console.info)
 ```
 
 ```js
@@ -97,9 +96,9 @@ startProbingONVIFDevices()
 If you'd like to tweak default settings feel free to override in the `.run()` method.
 
 ```ts
-import { probeONVIFDevices } from 'camera-probe'
+import { probe } from 'camera-probe'
 
-probeONVIFDevices()
+probe()
   .run({
     PORTS: [3702],
     PROBE_NETWORK_TIMEOUT_MS: 20000
@@ -110,6 +109,7 @@ probeONVIFDevices()
 ## Default Configuration
 ```ts
 export const DEFAULT_CONFIG: IProbeConfig = {
+  DOM_PARSER: new DOMParser(),
   PORTS: [139, 445, 1124, 3702],
   IP_SCANNER: {
     ENABLED: true,
@@ -121,7 +121,6 @@ export const DEFAULT_CONFIG: IProbeConfig = {
   PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
   PROBE_NETWORK_TIMEOUT_MS: 2000 * 1.5,
   ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
-  DOM_PARSER: new DOMParser(),
   NOT_FOUND_STRING: 'unknown'
 }
 ```

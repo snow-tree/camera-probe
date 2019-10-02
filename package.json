@@ -30,7 +30,7 @@
   "module": "dist/camera-probe-esm.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "onvif-probe": "dist/onvif-probe"
+    "camera-probe": "dist/camera-probe"
   },
   "scripts": {
     "test": "jest",
