@@ -2,9 +2,10 @@
   "compilerOptions": {
     "target": "es5",
     "module": "es2015",
-    "moduleResolution": "node",
     "lib": ["es2015", "dom"],
     "outDir": "dist",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "isolatedModules": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -22,9 +23,9 @@
     "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
   "include": [
-    "src/**/*.ts"
+    "src"
   ]
 }

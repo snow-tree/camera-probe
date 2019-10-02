@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs'
 import { ping } from 'ping-rx'
 import { networkInterfaces, NetworkInterfaceInfo } from 'os'
 import { RxHR as http } from '@akanass/rx-http-request'
+import { Strings } from './core/interfaces'
 
 export const createNumberedList = (num: number) => Array.from(Array(num).keys())
 export const getIpRangeFromPrefix = (length = 256) => (prefix: string) => createNumberedList(length).map(a => `${prefix}.${a}`)
@@ -17,12 +18,11 @@ export const getIpPrefixListFromNetworkInterfaces = (family: 'IPv4' | 'IPv6' = '
     .map(c => c.address.split('.').slice(0, 3).join('.'))
 }
 
-// tslint:disable-next-line:readonly-array
-export const combined = (...args: string[][]) => args.reduce((acc, curr) => [...acc, ...curr], [])
+export const combined = (...args: readonly (Strings)[]) => args.reduce((acc, curr) => [...acc, ...curr], [])
 
 export const ipscan =
-  (ipAddressPrefixes: readonly string[] = []) =>
-    (ipAddresses: readonly string[] = []) => {
+  (ipAddressPrefixes: Strings = []) =>
+    (ipAddresses: Strings = []) => {
       const standard = getIpPrefixListFromNetworkInterfaces().map(getIpRangeFromPrefix())
       const pref = ipAddressPrefixes.map(getIpRangeFromPrefix())
       // tslint:disable-next-line:readonly-array

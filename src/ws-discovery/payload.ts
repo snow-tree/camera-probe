@@ -1,7 +1,5 @@
-import { v4 } from 'uuid'
-
-export const probePayload =
-  (uuid: string = v4()) =>
+export const generateWsDiscoveryProbePayload =
+  (uuid: string) =>
     (type: string) =>
 `<?xml version="1.0" encoding="UTF-8"?>
 <Envelope xmlns="http://www.w3.org/2003/05/soap-envelope">
