@@ -21,11 +21,11 @@ describe('onvif-probe', () => {
   it('should work', done => {
     const port = 41240
     const config: IProbeConfig = {
-      ports: { upnp: [], wsDiscovery: [port] },
-      address: '0.0.0.0',
-      probeTimeoutMs: 3000,
-      falloutMs: 5000,
-      sampleIntervalMs: 50,
+      PORTS: { UPNP: [], WS_DISCOVERY: [port] },
+      MULTICAST_ADDRESS: '0.0.0.0',
+      FALLOUT_MS: 5000,
+      PROBE_SAMPLE_TIME_MS: 50,
+      PROBE_NETWORK_TIMEOUT_MS: 3000,
       DOM_PARSER: new DOMParser()
     }
 

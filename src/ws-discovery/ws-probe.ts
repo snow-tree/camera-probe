@@ -28,7 +28,7 @@ const wsDiscoveryParseToDict =
 
 export const wsProbe = (ss: ISocketStream) => 
   reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)(cfg.ports.wsDiscovery)(cfg.address)(mapDevicesToPayloads(['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']))(wsDiscoveryParseToDict)
+    probe(ss)(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']))(wsDiscoveryParseToDict)
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {

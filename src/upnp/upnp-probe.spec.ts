@@ -17,11 +17,11 @@ describe.skip('upnp probe', () => {
     // config
     const port = 1900
     const config: IProbeConfig = {
-      ports: { upnp: [port], wsDiscovery: [] },
-      address: '0.0.0.0',
-      probeTimeoutMs: 10000,
-      falloutMs: 1000,
-      sampleIntervalMs: 5000,
+      PORTS: { UPNP: [port], WS_DISCOVERY: [] },
+      MULTICAST_ADDRESS: '0.0.0.0',
+      FALLOUT_MS: 1000,
+      PROBE_SAMPLE_TIME_MS: 5000,
+      PROBE_NETWORK_TIMEOUT_MS: 10000,
       DOM_PARSER: new DOMParser()
     }
 

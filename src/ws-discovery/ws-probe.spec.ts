@@ -23,11 +23,11 @@ describe('ws probe', () => {
   it('should probe basic, no distinct guard', done => {
     const port = 41231
     const config: IProbeConfig = {
-      ports: { upnp: [], wsDiscovery: [port] },
-      address: '0.0.0.0',
-      probeTimeoutMs: 1000,
-      falloutMs: 1000,
-      sampleIntervalMs: 5000,
+      PORTS: { UPNP: [], WS_DISCOVERY: [port] },
+      MULTICAST_ADDRESS: '0.0.0.0',
+      PROBE_NETWORK_TIMEOUT_MS: 1000,
+      FALLOUT_MS: 1000,
+      PROBE_SAMPLE_TIME_MS: 5000,
       DOM_PARSER: new DOMParser()
     }
 
@@ -46,11 +46,11 @@ describe('ws probe', () => {
   it.only('should probe basic, distinct', done => {
     const port = 41231
     const config: IProbeConfig = {
-      ports: { upnp: [], wsDiscovery: [port] },
-      address: '0.0.0.0', //'239.255.255.250',
-      probeTimeoutMs: 1000,
-      falloutMs: 100,
-      sampleIntervalMs: 100,
+      PORTS: { UPNP: [], WS_DISCOVERY: [port] },
+      MULTICAST_ADDRESS: '0.0.0.0', //'239.255.255.250',
+      FALLOUT_MS: 100,
+      PROBE_SAMPLE_TIME_MS: 100,
+      PROBE_NETWORK_TIMEOUT_MS: 1000,
       DOM_PARSER: new DOMParser()
     }
 

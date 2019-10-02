@@ -33,7 +33,7 @@ export const flattenBuffersWithInfo =
         ports.reduce((acc, port) =>
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
-export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream('udp4', c.probeTimeoutMs, c.distinctFilterFn))
+export const initSocketStream = reader<IProbeConfig, ISocketStream>(c => socketStream('udp4', c.PROBE_NETWORK_TIMEOUT_MS, c.distinctFilterFn))
 
 export const probe =
   (socket: ISocketStream) =>
@@ -42,7 +42,7 @@ export const probe =
         (messagesToSend: Strings = []) =>
           (mapFn: (msg: readonly TimestampedMessage[]) => StringDictionary) =>
             reader<IProbeConfig, Observable<Strings>>(cfg => {
-              interval(cfg.sampleIntervalMs).pipe(
+              interval(cfg.PROBE_SAMPLE_TIME_MS).pipe(
                 mapTo(flattenBuffersWithInfo(ports)(address)(messagesToSend.map(mapStringToBuffer))),
                 takeUntil(socket.close$))
                 .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
@@ -50,7 +50,7 @@ export const probe =
               return socket.messages$.pipe(
                 filterOkResults,
                 timestamp,
-                accumulateFreshMessages(cfg.falloutMs),
+                accumulateFreshMessages(cfg.FALLOUT_MS),
                 mapStrToDictionary(mapFn),
                 distinctUntilObjectChanged,
                 toArrayOfValues,
