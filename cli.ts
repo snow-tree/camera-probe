@@ -9,5 +9,5 @@ if (!existsSync(dir)){
   mkdirSync(dir)
 }
 
-writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'../\').startCli()')
+writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'./camera-probe-cjs\').cli()')
 chmodSync(outPath, '755')
