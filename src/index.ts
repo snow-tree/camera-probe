@@ -7,7 +7,7 @@ export * from './config/config.interface'
 export const probe = initSocketStream.flatMap(onvifProbe)
 export const devices$ = () => probe.run(DEFAULT_CONFIG)
 
-export const startCli$ = () => devices$()
+export const cli = () => devices$()
   .subscribe(v => {
     console.log('\n')
     console.log('Scanning for networked cameras...')
