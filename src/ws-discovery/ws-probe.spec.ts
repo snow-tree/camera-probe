@@ -1,5 +1,5 @@
 import { createSocket } from 'dgram'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { first, skip, take } from 'rxjs/operators'
 import { combineLatest } from 'rxjs'
 import { wsProbe } from './ws-probe'

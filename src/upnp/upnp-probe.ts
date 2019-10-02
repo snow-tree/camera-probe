@@ -1,6 +1,6 @@
 import { ISocketStream } from '../core/socket-stream'
 import { reader, maybe } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { IWsResponses } from '../ws-discovery/ws-probe'
 import { probe } from '../core/probe'

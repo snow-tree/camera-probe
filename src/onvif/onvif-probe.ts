@@ -1,7 +1,7 @@
 import { wsProbe, IWsResponse } from '../ws-discovery/ws-probe'
 import { ISocketStream } from '../core/socket-stream'
 import { reader } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { IOnvifDevice } from './device'

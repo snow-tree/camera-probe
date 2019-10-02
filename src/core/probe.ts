@@ -2,7 +2,7 @@ import { map, filter, scan, distinctUntilChanged, takeUntil, mapTo } from 'rxjs/
 import { ISocketStream, socketStream } from '../core/socket-stream'
 import { reader, IResult } from 'typescript-monads'
 import { interval, Observable } from 'rxjs'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { Strings, Numbers } from '../core/interfaces'
 
 type TimestampMessages = readonly TimestampedMessage[]

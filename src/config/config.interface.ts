@@ -1,10 +1,15 @@
 import { DOMParser } from 'xmldom'
-import { TimestampMessages, StringDictionary, Numbers } from '../core/interfaces'
+import { Numbers } from '../core/interfaces'
 
 /**
  * Probe configuration
  */
 export interface IProbeConfig {
+  /**
+   * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
+   */
+  readonly DOM_PARSER: DOMParser
+
   /**
    * Time it takes to determine if a device is no longer present on the network.
    * This is best to be at least 1.5x longer than PROBE_SAMPLE_TIME_MS
@@ -13,7 +18,6 @@ export interface IProbeConfig {
   readonly falloutMs: number
   readonly sampleIntervalMs: number
   readonly distinctFilterFn?: (prev: string, curr: string) => boolean
-
   readonly address: string
   readonly ports: {
     readonly upnp: Numbers
@@ -45,11 +49,6 @@ export interface IProbeConfig {
   //  * When an attribute is undefined, use this text instead.
   //  */
   // readonly NOT_FOUND_STRING: string
-
-  /**
-   * An object the conforms to the W3C DOMParser spec. This helps parse respnse XML.
-   */
-  readonly DOM_PARSER: DOMParser
 }
 
 

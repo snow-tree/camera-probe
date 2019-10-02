@@ -1,5 +1,5 @@
 import { createSocket } from 'dgram'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
 import { onvifProbe } from './onvif-probe'

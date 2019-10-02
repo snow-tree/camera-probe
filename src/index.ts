@@ -1,16 +1,17 @@
-// import { map, distinctUntilChanged, takeUntil, mergeScan, flatMap, takeWhile } from 'rxjs/operators'
-// import { timer, Observable, forkJoin, combineLatest, of } from 'rxjs'
-// import { IProbeConfig, DEFAULT_CONFIG } from './config/config.app'
-// import { maybe, reader, IMaybe } from 'typescript-monads'
-// import { parseXmlResponse, maybeIpAddress } from './parse'
-// import { socketStream } from './core/socket-stream'
-// import { IONVIFDevice } from './onvif/device'
-// export { IProbeConfig } from './config/config.app'
-// import { MD5 } from 'object-hash'
-// import { ping } from 'ping-rx'
-// import { ipscan } from './ipscan'
-// export { IONVIFDevice }
-// export { DEFAULT_CONFIG }
+import { onvifProbe } from './onvif/onvif-probe'
+import { initSocketStream } from './core/probe'
+import { DEFAULT_CONFIG } from './config/config.default'
+
+export * from './config/config.interface'
+
+export const start = () => initSocketStream.flatMap(onvifProbe).run(DEFAULT_CONFIG)
+
+export const startCli = () => start()
+  .subscribe(v => {
+    console.log('\n')
+    console.log('Scanning for networked cameras...')
+    console.log(v)
+  })
 
 // interface IReponse {
 //   devices: [
@@ -25,18 +26,8 @@
 // }
 
 
-
-
-
-
-
-
-
-
-
-// const uniqueObjects =
-//   (arr: readonly any[]) =>
-//     arr.filter((object, index) => index === arr.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)))
+// export { IONVIFDevice }
+// export { DEFAULT_CONFIG }
 
 // type ProbeStream = Observable<readonly IONVIFDevice[]>
 
@@ -108,11 +99,4 @@
 //   }).pipe(distinctUntilChanged((a, b) => MD5(a) === MD5(b)))
 // })
 
-// export const startProbingONVIFDevices = () => probeONVIFDevices().run({})
 
-// export const startProbingONVIFDevicesCli = () => startProbingONVIFDevices()
-//   .subscribe(v => {
-//     console.log('\n')
-//     console.log('Watching for connected ONVIF devices...', '\n')
-//     console.log(v)
-//   })

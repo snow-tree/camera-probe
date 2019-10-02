@@ -9,5 +9,5 @@ if (!existsSync(dir)){
   mkdirSync(dir)
 }
 
-writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'../\').startProbingONVIFDevicesCli()')
+writeFileSync(outPath, '#!/usr/bin/env node\nrequire(\'../\').startCli()')
 chmodSync(outPath, '755')

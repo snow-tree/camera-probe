@@ -4,7 +4,7 @@ import { generateWsDiscoveryProbePayload } from './payload'
 import { generateGuid } from '../core/guid'
 import { TimestampMessages, StringDictionary } from '../core/interfaces'
 import { maybe, reader } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.probe'
+import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
