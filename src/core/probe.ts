@@ -1,7 +1,7 @@
-import { map, filter, scan, distinctUntilChanged, takeUntil, mapTo } from 'rxjs/operators'
+import { map, filter, scan, distinctUntilChanged, takeUntil, mapTo, tap } from 'rxjs/operators'
 import { ISocketStream, socketStream } from '../core/socket-stream'
 import { reader, IResult } from 'typescript-monads'
-import { interval, Observable } from 'rxjs'
+import { interval, Observable, timer } from 'rxjs'
 import { IProbeConfig } from '../config/config.interface'
 import { Strings, Numbers } from '../core/interfaces'
 
@@ -42,12 +42,12 @@ export const probe =
         (messagesToSend: Strings = []) =>
           (mapFn: (msg: readonly TimestampedMessage[]) => StringDictionary) =>
             reader<IProbeConfig, Observable<Strings>>(cfg => {
-              interval(cfg.PROBE_SAMPLE_TIME_MS).pipe(
+              timer(0, cfg.PROBE_SAMPLE_TIME_MS).pipe(
                 mapTo(flattenBuffersWithInfo(ports)(address)(messagesToSend.map(mapStringToBuffer))),
                 takeUntil(socket.close$))
-                .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
+                .subscribe(bfrPorts =>  bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
-              return socket.messages$.pipe(
+                return socket.messages$.pipe(
                 filterOkResults,
                 timestamp,
                 accumulateFreshMessages(cfg.FALLOUT_MS),

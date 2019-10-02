@@ -20,7 +20,7 @@ const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDevi
 const wsDiscoveryParseToDict =
   (msg: TimestampMessages) =>
     msg.reduce((acc, item) =>
-      maybe(item.msg.match(/urn:uuid:.*?</g))
+      maybe(item.msg.match(/uuid:.*?</g))
         .flatMapAuto(a => a[0].replace('<', '').split(':').pop())
         .filter(key => !acc[key])
         .map(key => ({ ...acc, [key]: item.msg }))
