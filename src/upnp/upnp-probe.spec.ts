@@ -17,14 +17,12 @@ describe.skip('upnp probe', () => {
     // config
     const port = 1900
     const config: IProbeConfig = {
-      ports: [port],
-      address: '239.255.255.250',
-      protocol: 'udp4',
+      ports: { upnp: [port], wsDiscovery: [] },
+      address: '0.0.0.0',
       probeTimeoutMs: 10000,
       falloutMs: 1000,
       sampleIntervalMs: 5000,
-      DOM_PARSER: new DOMParser(),
-      onvifDeviceTypes: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay']
+      DOM_PARSER: new DOMParser()
     }
 
     // initTestServer(port)
