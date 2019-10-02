@@ -110,16 +110,14 @@ probe()
 ```ts
 export const DEFAULT_CONFIG: IProbeConfig = {
   DOM_PARSER: new DOMParser(),
-  PORTS: [139, 445, 1124, 3702],
-  IP_SCANNER: {
-    ENABLED: true,
-    IP_ADDRESSES: [],
-    PREFIXES: []
+  PORTS: {
+    UPNP: [1900],
+    WS_DISCOVERY: [3702]
   },
   MULTICAST_ADDRESS: '239.255.255.250',
   PROBE_SAMPLE_TIME_MS: 2000,
-  PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
   PROBE_NETWORK_TIMEOUT_MS: 2000 * 1.5,
+  PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
   ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
   NOT_FOUND_STRING: 'unknown'
 }

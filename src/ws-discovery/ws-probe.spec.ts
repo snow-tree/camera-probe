@@ -27,6 +27,7 @@ describe('ws probe', () => {
       MULTICAST_ADDRESS: '0.0.0.0',
       PROBE_NETWORK_TIMEOUT_MS: 1000,
       FALLOUT_MS: 1000,
+      ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
       PROBE_SAMPLE_TIME_MS: 5000,
       DOM_PARSER: new DOMParser()
     }
@@ -51,6 +52,7 @@ describe('ws probe', () => {
       FALLOUT_MS: 100,
       PROBE_SAMPLE_TIME_MS: 100,
       PROBE_NETWORK_TIMEOUT_MS: 1000,
+      ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
       DOM_PARSER: new DOMParser()
     }
 

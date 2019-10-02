@@ -7,6 +7,7 @@ export const DEFAULT_CONFIG: IProbeConfig = {
   FALLOUT_MS: 5000,
   PROBE_SAMPLE_TIME_MS: 0,
   PROBE_NETWORK_TIMEOUT_MS: 0,
+  ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
   PORTS: {
     UPNP: [1900],
     WS_DISCOVERY: [3702]

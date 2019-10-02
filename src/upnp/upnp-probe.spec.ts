@@ -22,6 +22,7 @@ describe.skip('upnp probe', () => {
       FALLOUT_MS: 1000,
       PROBE_SAMPLE_TIME_MS: 5000,
       PROBE_NETWORK_TIMEOUT_MS: 10000,
+      ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
       DOM_PARSER: new DOMParser()
     }
 

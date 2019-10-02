@@ -40,10 +40,10 @@ export interface IProbeConfig {
    */
   readonly PROBE_NETWORK_TIMEOUT_MS: number
 
-  // /**
-  //  * ONVIF device types to check for.
-  //  */
-  // readonly ONVIF_DEVICES: readonly string[]
+  /**
+   * ONVIF device types to check for.
+   */
+  readonly ONVIF_DEVICES: readonly string[]
 
   // /**
   //  * When an attribute is undefined, use this text instead.

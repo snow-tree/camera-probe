@@ -26,6 +26,7 @@ describe('onvif-probe', () => {
       FALLOUT_MS: 5000,
       PROBE_SAMPLE_TIME_MS: 50,
       PROBE_NETWORK_TIMEOUT_MS: 3000,
+      ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
       DOM_PARSER: new DOMParser()
     }
 
