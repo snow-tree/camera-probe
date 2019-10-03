@@ -1,7 +1,7 @@
 import { map, filter, scan, distinctUntilChanged, takeUntil, mapTo, tap } from 'rxjs/operators'
 import { ISocketStream, socketStream } from '../core/socket-stream'
 import { reader, IResult } from 'typescript-monads'
-import { interval, Observable, timer } from 'rxjs'
+import { Observable, timer } from 'rxjs'
 import { IProbeConfig } from '../config/config.interface'
 import { Strings, Numbers } from '../core/interfaces'
 
@@ -17,10 +17,12 @@ const toArrayOfValues = <T extends StringDictionary>(source: Observable<T>) => s
 const flattenDocumentStrings = (source: Observable<Strings>) => source.pipe(map(a => a.map(flattenXml)))
 const filterOkResults = <TOk, TFail>(source: Observable<IResult<TOk, TFail>>) => source.pipe(filter(a => a.isOk()))
 const timestamp = <TFail>(source: Observable<IResult<Buffer, TFail>>) => source.pipe(map<IResult<Buffer, TFail>, TimestampedMessage>(a => ({ msg: a.unwrap().toString(), ts: Date.now() })))
+
 const accumulateFreshMessages =
   (falloutTime: number) =>
     (source: Observable<TimestampedMessage>) =>
       source.pipe(scan((acc, val) => [...acc, val].filter(a => a.ts > Date.now() - falloutTime), [] as TimestampMessages))
+
 const mapStrToDictionary =
   (mapFn: (msg: TimestampMessages) => StringDictionary) =>
     (source: Observable<TimestampMessages>) =>
@@ -45,9 +47,9 @@ export const probe =
               timer(0, cfg.PROBE_SAMPLE_TIME_MS).pipe(
                 mapTo(flattenBuffersWithInfo(ports)(address)(messagesToSend.map(mapStringToBuffer))),
                 takeUntil(socket.close$))
-                .subscribe(bfrPorts =>  bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
+                .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
-                return socket.messages$.pipe(
+              return socket.messages$.pipe(
                 filterOkResults,
                 timestamp,
                 accumulateFreshMessages(cfg.FALLOUT_MS),
