@@ -12,11 +12,18 @@ interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly 
 
 const flattenXml = (str: string) => str.replace(/>\s*/g, '>').replace(/\s*</g, '<')
 const mapStringToBuffer = (str: string) => Buffer.from(str, 'utf8')
-const distinctUntilObjectChanged = <T>(source: Observable<T>) => source.pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
 const toArrayOfValues = <T extends StringDictionary>(source: Observable<T>) => source.pipe(map(a => Object.keys(a).map(b => a[b])))
 const flattenDocumentStrings = (source: Observable<Strings>) => source.pipe(map(a => a.map(flattenXml)))
 const filterOkResults = <TOk, TFail>(source: Observable<IResult<TOk, TFail>>) => source.pipe(filter(a => a.isOk()))
 const timestamp = <TFail>(source: Observable<IResult<Buffer, TFail>>) => source.pipe(map<IResult<Buffer, TFail>, TimestampedMessage>(a => ({ msg: a.unwrap().toString(), ts: Date.now() })))
+const distinctUntilObjectChanged = <T>(source: Observable<T>) => source.pipe(distinctUntilChanged((a, b) => {
+  const keys1 = Object.keys(a)
+  const keys2 = Object.keys(b)
+ 
+  return  keys1.length === keys2.length && keys1.reduce((acc: boolean, curr) => {
+    return acc === false ? false : keys2.includes(curr) as boolean
+  }, true)
+}))
 
 const accumulateFreshMessages =
   (falloutTime: number) =>

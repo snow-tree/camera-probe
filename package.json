@@ -38,7 +38,7 @@
     "lint": "tslint -p tsconfig.json",
     "rollup": "rollup -c",
     "cli": "ts-node -P tsconfig.json -O '{\"module\":\"commonjs\"}' ./cli",
-    "cli.run": "ts-node -P tsconfig.json -O '{\"module\":\"commonjs\"}' src/index"
+    "build": "npm run rollup && npm run cli"
   },
   "dependencies": {
     "@akanass/rx-http-request": "^3.3.0",
