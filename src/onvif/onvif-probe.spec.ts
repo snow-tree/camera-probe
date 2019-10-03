@@ -1,5 +1,4 @@
 import { createSocket } from 'dgram'
-import { IProbeConfig } from '../config/config.interface'
 import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
 import { onvifProbe } from './onvif-probe'
@@ -22,7 +21,7 @@ const config = (port: number) => {
   return {
     PORTS: { UPNP: [], WS_DISCOVERY: [port] },
     MULTICAST_ADDRESS: '0.0.0.0',
-    FALLOUT_MS: 24000,
+    FALLOUT_MS: 12000,
     PROBE_SAMPLE_TIME_MS: 6000,
     PROBE_NETWORK_TIMEOUT_MS: 12000,
     ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],

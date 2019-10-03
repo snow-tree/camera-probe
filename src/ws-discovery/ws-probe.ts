@@ -2,11 +2,12 @@ import { probe } from '../core/probe'
 import { ISocketStream } from '../core/socket-stream'
 import { generateWsDiscoveryProbePayload } from './payload'
 import { generateGuid } from '../core/guid'
-import { TimestampMessages, StringDictionary } from '../core/interfaces'
-import { maybe, reader } from 'typescript-monads'
+import { TimestampMessages } from '../core/interfaces'
+import { reader } from 'typescript-monads'
 import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
+import { xmlToOnvifDevice } from '../onvif/parse'
 
 export interface IWsResponse {
   readonly raw: string
@@ -18,17 +19,18 @@ export type IWsResponses = readonly IWsResponse[]
 const mapDeviceStrToPayload = (str: string) => generateWsDiscoveryProbePayload(str)(generateGuid())
 const mapDevicesToPayloads = (devices: readonly string[]) => devices.map(mapDeviceStrToPayload)
 const wsDiscoveryParseToDict =
-  (msg: TimestampMessages) =>
-    msg.reduce((acc, item) =>
-      maybe(item.msg.match(/uuid:.*?</g))
-        .flatMapAuto(a => a[0].replace('<', '').split(':').pop())
-        .filter(key => !acc[key])
-        .map(key => ({ ...acc, [key]: item.msg }))
-        .valueOr(acc), {} as StringDictionary)
+  (parser: DOMParser) =>
+    (msg: TimestampMessages) =>
+      msg.reduce((acc, curr) => {
+        return {
+          ...acc,
+          [xmlToOnvifDevice(parser.parseFromString(curr.msg, 'application/xml'))().urn]: curr.msg
+        }
+      }, {})
 
-export const wsProbe = (ss: ISocketStream) => 
-  reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict)
+export const wsProbe = (ss: ISocketStream) =>
+  reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
+    probe(ss)(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {
@@ -38,4 +40,3 @@ export const wsProbe = (ss: ISocketStream) =>
         })
       })))
       .run(cfg))
-    

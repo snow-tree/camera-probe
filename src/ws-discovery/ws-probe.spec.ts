@@ -1,7 +1,5 @@
 import { createSocket } from 'dgram'
 import { IProbeConfig } from '../config/config.interface'
-import { first, skip, take } from 'rxjs/operators'
-import { combineLatest } from 'rxjs'
 import { wsProbe } from './ws-probe'
 import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
@@ -20,35 +18,11 @@ const initTestServer = (port: number) => {
 }
 
 describe('ws probe', () => {
-  it('should probe basic, no distinct guard', done => {
-    const port = 41231
+  it('should probe basic, distinct', done => {
+    const port = 41251
     const config: IProbeConfig = {
       PORTS: { UPNP: [], WS_DISCOVERY: [port] },
       MULTICAST_ADDRESS: '0.0.0.0',
-      PROBE_NETWORK_TIMEOUT_MS: 1000,
-      FALLOUT_MS: 1000,
-      ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
-      PROBE_SAMPLE_TIME_MS: 5000,
-      DOM_PARSER: new DOMParser()
-    }
-
-    initTestServer(port)
-    const base = initSocketStream.flatMap(wsProbe).run(config)
-    const val1 = base.pipe(first())
-    const val2 = base.pipe(skip(1), take(1))
-    const val3 = base.pipe(skip(2), take(1))
-
-    combineLatest([val1, val2, val3]).subscribe(res => {
-      expect(res.length).toEqual(3)
-      done()
-    })
-  })
-
-  it.only('should probe basic, distinct', done => {
-    const port = 41231
-    const config: IProbeConfig = {
-      PORTS: { UPNP: [], WS_DISCOVERY: [port] },
-      MULTICAST_ADDRESS: '0.0.0.0', //'239.255.255.250',
       FALLOUT_MS: 100,
       PROBE_SAMPLE_TIME_MS: 100,
       PROBE_NETWORK_TIMEOUT_MS: 1000,

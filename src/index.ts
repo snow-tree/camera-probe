@@ -1,19 +1,19 @@
 import { onvifProbe } from './onvif/onvif-probe'
 import { initSocketStream } from './core/probe'
 import { DEFAULT_CONFIG } from './config/config.default'
-import { map } from 'rxjs/operators'
+import { map, shareReplay } from 'rxjs/operators'
 
 export * from './config/config.interface'
 
 export const probe = initSocketStream.flatMap(onvifProbe)
-export const devices$ = () => probe.run(DEFAULT_CONFIG)
+export const probe$ = probe.run(DEFAULT_CONFIG).pipe(shareReplay(1))
+export const devices$ = probe$.pipe(map(a => a.map(b => b.device)))
+export const responses$ = probe$.pipe(map(a => a.map(b => b.raw)))
 
-export const cli = () => devices$().pipe(map(a => a.map(b => b.device)))
-  .subscribe(v => {
-    console.log('\n')
-    console.log('Scanning for networked cameras...')
-    console.log(v)
-  })
+export const cli = () => {
+  console.log('Scanning for networked cameras...')
+  return devices$.subscribe(console.log)
+}
 
 // interface IReponse {
 //   devices: [
