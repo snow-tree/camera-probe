@@ -11,8 +11,21 @@ export const devices$ = probe$.pipe(map(a => a.map(b => b.device)))
 export const responses$ = probe$.pipe(map(a => a.map(b => b.raw)))
 
 export const cli = () => {
-  console.log('Scanning for networked cameras...')
-  return devices$.subscribe(console.log)
+  return devices$
+    .subscribe(res => {
+      console.clear()
+      console.log('Camera Probe')
+      console.table(
+        res.map(device => {
+          return {
+            Name: device.name,
+            Model: device.hardware,
+            IP: device.ip,
+            URN: device.urn,
+            Endpoiint: device.deviceServiceUri
+          }
+        }))
+    })
 }
 
 // interface IReponse {
