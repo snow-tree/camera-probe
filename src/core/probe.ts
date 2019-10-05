@@ -1,13 +1,11 @@
-import { reader } from 'typescript-monads'
 import { createSocket, RemoteInfo } from 'dgram'
-import { Strings, Numbers, IProbeConfig } from './interfaces'
+import { Strings, Numbers, IProbeConfig, DEFAULT_PROBE_CONFIG } from './interfaces'
 import { Observable, Observer, fromEvent, timer } from 'rxjs'
 import { first, shareReplay, map, distinctUntilChanged, mapTo, takeWhile, takeUntil, scan } from 'rxjs/operators'
 
 type IMessage = readonly [Buffer, RemoteInfo]
 type TimestampMessages = readonly TimestampedMessage[]
 type StringDictionary = { readonly [key: string]: string }
-// type
 interface TimestampedMessage { readonly msg: string, readonly ts: number }
 interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly address: string }
 
@@ -20,9 +18,8 @@ const distinctUntilObjectChanged = <T>(source: Observable<T>) => source.pipe(dis
   const keys1 = Object.keys(a)
   const keys2 = Object.keys(b)
 
-  return keys1.length === keys2.length && keys1.reduce((acc: boolean, curr) => {
-    return acc === false ? false : keys2.includes(curr) as boolean
-  }, true)
+  return keys1.length === keys2.length && 
+    keys1.reduce((acc: boolean, curr) => acc === false ? false : keys2.includes(curr) as boolean, true)
 }))
 
 const accumulateFreshMessages =
@@ -43,10 +40,10 @@ export const flattenBuffersWithInfo =
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
 export const probe =
-  (config: Partial<IProbeConfig>) =>
+  (config?: Partial<IProbeConfig>) =>
     (messages: Strings): Observable<Strings> =>
       Observable.create((obs: Observer<Strings>) => {
-        const cfg = { ...defaultConfig, ...config }
+        const cfg = { ...DEFAULT_PROBE_CONFIG, ...(config || {}) }
         const socket = createSocket({ type: 'udp4' })
         const socketClosed$ = fromEvent<void>(socket, 'close').pipe(first(), shareReplay(1))
         const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
