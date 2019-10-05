@@ -13,7 +13,6 @@ const initTestServer = (port: number) => {
 
 describe.skip('upnp probe', () => {
   it.skip('ddddd', done => {
-    // config
     const port = 1900
     const config: IProbeConfig = {
       PORTS: { UPNP: [port], WS_DISCOVERY: [] },

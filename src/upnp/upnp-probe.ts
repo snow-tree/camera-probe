@@ -40,7 +40,7 @@ MX: 10
 ST: ssdp:all`
 
 export const upnpProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(cfg.PORTS.UPNP)('239.255.255.250')([query])(upnpDiscoveryParseToDict)()
+    probe(cfg.PORTS.UPNP)('239.255.255.250')([query])(upnpDiscoveryParseToDict)
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {

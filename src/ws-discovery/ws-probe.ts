@@ -28,13 +28,13 @@ const wsDiscoveryParseToDict =
       }, {})
 
 export const wsProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
-    probe(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))()
-      .map(a => a.pipe(map(b => {
-        return b.map(raw => {
-          return {
-            raw,
-            doc: cfg.DOM_PARSER.parseFromString(raw)
-          }
-        })
-      })))
-      .run(cfg))
+  probe(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))
+    .map(a => a.pipe(map(b => {
+      return b.map(raw => {
+        return {
+          raw,
+          doc: cfg.DOM_PARSER.parseFromString(raw)
+        }
+      })
+    })))
+    .run(cfg))
