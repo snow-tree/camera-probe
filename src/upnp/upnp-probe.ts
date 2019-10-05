@@ -1,9 +1,5 @@
-import { reader, maybe } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.interface'
-import { Observable } from 'rxjs'
-import { IWsResponses } from '../ws-discovery/ws-probe'
-import { map } from 'rxjs/operators'
-import { TimestampMessages } from '../core/interfaces'
+import { maybe } from 'typescript-monads'
+import { TimestampMessages, IProbeConfig } from '../core/interfaces'
 import { probe } from '../core/probe'
 
 // TODO!!!
@@ -39,14 +35,4 @@ MAN: ssdp:discover
 MX: 10
 ST: ssdp:all`
 
-export const upnpProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(cfg.PORTS.UPNP)('239.255.255.250')([query])(upnpDiscoveryParseToDict)
-      .map(a => a.pipe(map(b => {
-        return b.map(raw => {
-          return {
-            raw,
-            doc: '' as any
-          }
-        })
-      })))
-      .run(cfg))
+export const upnpProbe = (config: Partial<IProbeConfig>) => probe(config)([query])

@@ -14,12 +14,19 @@ const initTestServer = (port: number) => {
   return server
 }
 
+const config = (port: number) => {
+  return {
+    PORTS: [port],
+    MULTICAST_ADDRESS: '0.0.0.0'
+  }
+}
+
 describe('ws probe', () => {
   it('should probe basic, distinct', done => {
     const port = 41251
 
     initTestServer(port)
-    wsProbe({ PORTS: [port] })
+    wsProbe(config(port))
       .subscribe(res => {
         const res1 = res[0]
         expect(res.length).toEqual(1)
