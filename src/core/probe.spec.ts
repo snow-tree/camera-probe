@@ -1,4 +1,4 @@
-import { flattenBuffersWithInfo } from '../core/probe'
+import { flattenBuffersWithInfo } from './probe'
 
 describe('Probe', () => {
   it('should flatten buffers to ports', done => {

@@ -1,6 +1,5 @@
 import { createSocket } from 'dgram'
 import { IProbeConfig } from '../config/config.interface'
-import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
 import { upnpProbe } from './upnp-probe'
 
@@ -26,8 +25,7 @@ describe.skip('upnp probe', () => {
       DOM_PARSER: new DOMParser()
     }
 
-    // initTestServer(port)
-    initSocketStream.flatMap(upnpProbe).run(config)
+    upnpProbe.run(config)
       .subscribe(res => {
         console.log(res)
       })

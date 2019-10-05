@@ -1,11 +1,10 @@
-import { ISocketStream } from '../core/socket-stream'
 import { reader, maybe } from 'typescript-monads'
 import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { IWsResponses } from '../ws-discovery/ws-probe'
-import { probe } from '../core/probe'
 import { map } from 'rxjs/operators'
 import { TimestampMessages } from '../core/interfaces'
+import { probe } from '../core/probe'
 
 // TODO!!!
 const upnpDiscoveryParseToDict =
@@ -40,9 +39,8 @@ MAN: ssdp:discover
 MX: 10
 ST: ssdp:all`
 
-export const upnpProbe = (ss: ISocketStream) => 
-  reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
-    probe(ss)(cfg.PORTS.UPNP)('239.255.255.250')([query])(upnpDiscoveryParseToDict)
+export const upnpProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg => 
+    probe(cfg.PORTS.UPNP)('239.255.255.250')([query])(upnpDiscoveryParseToDict)()
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {

@@ -1,5 +1,3 @@
-import { probe } from '../core/probe'
-import { ISocketStream } from '../core/socket-stream'
 import { generateWsDiscoveryProbePayload } from './payload'
 import { generateGuid } from '../core/guid'
 import { TimestampMessages } from '../core/interfaces'
@@ -8,6 +6,7 @@ import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { xmlToOnvifDevice } from '../onvif/parse'
+import { probe } from '../core/probe'
 
 export interface IWsResponse {
   readonly raw: string
@@ -28,9 +27,8 @@ const wsDiscoveryParseToDict =
         }
       }, {})
 
-export const wsProbe = (ss: ISocketStream) =>
-  reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
-    probe(ss)(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))
+export const wsProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
+    probe(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))()
       .map(a => a.pipe(map(b => {
         return b.map(raw => {
           return {

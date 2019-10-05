@@ -1,5 +1,4 @@
 import { createSocket } from 'dgram'
-import { initSocketStream } from '../core/probe'
 import { DOMParser } from 'xmldom'
 import { onvifProbe } from './onvif-probe'
 
@@ -35,7 +34,7 @@ describe('onvif-probe', () => {
     const port = 41241
 
     initTestServer(port)(ipcam)
-    initSocketStream.flatMap(onvifProbe).run(config(port))
+    onvifProbe.run(config(port))
       .subscribe(res => {
         expect(res[0].device).toEqual({
           name: 'IPCAM',
@@ -62,7 +61,7 @@ describe('onvif-probe', () => {
     const port = 41242
 
     initTestServer(port)(amcrest)
-    initSocketStream.flatMap(onvifProbe).run(config(port))
+    onvifProbe.run(config(port))
       .subscribe(res => {
         expect(res[0].device).toEqual({
           name: 'Amcrest',
