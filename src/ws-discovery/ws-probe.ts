@@ -1,8 +1,7 @@
 import { generateWsDiscoveryProbePayload } from './payload'
 import { generateGuid } from '../core/guid'
-import { TimestampMessages } from '../core/interfaces'
+import { TimestampMessages, IProbeConfig } from '../core/interfaces'
 import { reader } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.interface'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { xmlToOnvifDevice } from '../onvif/parse'
@@ -27,14 +26,16 @@ const wsDiscoveryParseToDict =
         }
       }, {})
 
-export const wsProbe = reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
-  probe(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))
-    .map(a => a.pipe(map(b => {
-      return b.map(raw => {
-        return {
-          raw,
-          doc: cfg.DOM_PARSER.parseFromString(raw)
-        }
-      })
-    })))
-    .run(cfg))
+export const wsProbe = (config: Partial<IProbeConfig>) => probe(config)(mapDevicesToPayloads(['']))
+
+// reader<IProbeConfig, Observable<IWsResponses>>(cfg =>
+//   probe(cfg.PORTS.WS_DISCOVERY)(cfg.MULTICAST_ADDRESS)(mapDevicesToPayloads(cfg.ONVIF_DEVICES))(wsDiscoveryParseToDict(cfg.DOM_PARSER))
+//     .map(a => a.pipe(map(b => {
+//       return b.map(raw => {
+//         return {
+//           raw,
+//           doc: cfg.DOM_PARSER.parseFromString(raw)
+//         }
+//       })
+//     })))
+//     .run(cfg))

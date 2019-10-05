@@ -1,13 +1,13 @@
 import { reader } from 'typescript-monads'
-import { IProbeConfig } from '..'
-import { Strings, Numbers } from './interfaces'
 import { createSocket, RemoteInfo } from 'dgram'
+import { Strings, Numbers, IProbeConfig } from './interfaces'
 import { Observable, Observer, fromEvent, timer } from 'rxjs'
 import { first, shareReplay, map, distinctUntilChanged, mapTo, takeWhile, takeUntil, scan } from 'rxjs/operators'
 
 type IMessage = readonly [Buffer, RemoteInfo]
 type TimestampMessages = readonly TimestampedMessage[]
 type StringDictionary = { readonly [key: string]: string }
+// type
 interface TimestampedMessage { readonly msg: string, readonly ts: number }
 interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly address: string }
 
@@ -43,27 +43,26 @@ export const flattenBuffersWithInfo =
           [...acc, ...buffers.map(buffer => ({ buffer, port, address }))], [] as readonly BufferPort[])
 
 export const probe =
-  (ports: Numbers) =>
-    (address: string) =>
-      (messages: readonly string[]) =>
-        (mapFn: (msg: readonly TimestampedMessage[]) => StringDictionary) =>
-          reader<IProbeConfig, Observable<Strings>>(cfg => Observable.create((obs: Observer<readonly string[]>) => {
-            const socket = createSocket({ type: 'udp4' })
-            const socketClosed$ = fromEvent<void>(socket, 'close').pipe(first(), shareReplay(1))
-            const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
+  (config: Partial<IProbeConfig>) =>
+    (messages: Strings): Observable<Strings> =>
+      Observable.create((obs: Observer<Strings>) => {
+        const cfg = { ...defaultConfig, ...config }
+        const socket = createSocket({ type: 'udp4' })
+        const socketClosed$ = fromEvent<void>(socket, 'close').pipe(first(), shareReplay(1))
+        const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
 
-            timer(0, cfg.PROBE_SAMPLE_TIME_MS).pipe(
-              mapTo(flattenBuffersWithInfo(ports)(address)(messages.map(mapStringToBuffer))),
-              takeWhile(() => !obs.closed),
-              takeUntil(socketClosed$))
-              .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
+        timer(0, cfg.PROBE_REQUEST_SAMPLE_RATE_MS).pipe(
+          mapTo(flattenBuffersWithInfo(cfg.PORTS)(cfg.MULTICAST_ADDRESS)(messages.map(mapStringToBuffer))),
+          takeWhile(() => !obs.closed),
+          takeUntil(socketClosed$))
+          .subscribe(bfrPorts => bfrPorts.forEach(mdl => socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address)))
 
-            socketMessages$.pipe(
-              timestamp,
-              accumulateFreshMessages(cfg.FALLOUT_MS),
-              mapStrToDictionary(mapFn),
-              distinctUntilObjectChanged,
-              toArrayOfValues,
-              flattenDocumentStrings
-            ).subscribe(msg => obs.next(msg))
-          }))
+        socketMessages$.pipe(
+          timestamp,
+          accumulateFreshMessages(cfg.PROBE_RESPONSE_FALLOUT_MS),
+          mapStrToDictionary(cfg.RESULT_DEDUPE_FN),
+          distinctUntilObjectChanged,
+          toArrayOfValues,
+          flattenDocumentStrings
+        ).subscribe(msg => obs.next(msg))
+      })
