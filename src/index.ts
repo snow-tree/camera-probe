@@ -20,13 +20,12 @@ export const cli = () => {
             Model: device.hardware,
             IP: device.ip,
             URN: device.urn,
-            Endpoiint: device.deviceServiceUri
+            Endpoint: device.deviceServiceUri
           }
         }))
     })
 }
 
-cli()
 // interface IReponse {
 //   devices: [
 //     {
