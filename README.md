@@ -37,29 +37,30 @@ This package is designed to be run in Node. For the best developer experience us
 $ npm i camera-probe
 ```
 
-## CLI
+## CLI Usage
 For CLI usage its easier to install globally like so:
 ```sh
 $ npm i -g camera-probe
 
 // starting listening
 $ camera-probe
+
+// This table will update as cameras come online and offline.
+┌─────────┬───────────┬─────────────┬─────────────────┬──────────────────────────────────────────┬────────────────────────────────────────────────┐
+│ (index) │   Name    │    Model    │       IP        │                   URN                    │                   Endpoint                     │
+├─────────┼───────────┼─────────────┼─────────────────┼──────────────────────────────────────────┼────────────────────────────────────────────────┤
+│    0    │ 'Amcrest' │ 'IP2M-841B' │ '192.168.1.1'   │  '38b4eeff-f5bd-46b9-92e4-30e6acffee73'  │  'http://192.168.1.1/onvif/device_service'     │
+│    1    │  'IPCAM'  │   '631GA'   │ '192.168.1.2'   │  '4f5dcb4f-eea6-4cda-b290-f2b2b7d2f14f'  │  'http://192.168.1.2:80/onvif/device_service'  │
+└─────────┴───────────┴─────────────┴─────────────────┴──────────────────────────────────────────┴────────────────────────────────────────────────┘
 ```
 
-## Usage
-Starts probing the network using the default configuration.
-```ts
-import { devices$ } from 'camera-probe'
-
-devices$().subscribe(console.info)
-```
-
+## Programmatic Usage
 ```js
-// example probe results
-// two cameras discovered on the network with ONVIF WS-Discovery via UDP
-// This will be the last emitted value in the observable until a new camera comes online
-// or a camera is disconnected or otherwise fails to respond to a ping.
+import { onvifDevices$ } from 'camera-probe'
 
+onvifDevices$.subscribe(console.log)
+
+// results
 [ { name: 'Amcrest',
     hardware: 'IP2M-8200',
     location: 'china',
@@ -91,34 +92,4 @@ devices$().subscribe(console.info)
        'onvif://www.onvif.org/location/country/china' ],
     profiles: [ 'Streaming' ],
     xaddrs: [ 'http://192.168.5.13:80/onvif/device_service' ] } ]
-```
-
-If you'd like to tweak default settings feel free to override in the `.run()` method.
-
-```ts
-import { probe } from 'camera-probe'
-
-probe()
-  .run({
-    PORTS: [3702],
-    PROBE_NETWORK_TIMEOUT_MS: 20000
-  })
-  .subscribe(console.log)
-```
-
-## Default Configuration
-```ts
-export const DEFAULT_CONFIG: IProbeConfig = {
-  DOM_PARSER: new DOMParser(),
-  PORTS: {
-    UPNP: [1900],
-    WS_DISCOVERY: [3702]
-  },
-  MULTICAST_ADDRESS: '239.255.255.250',
-  PROBE_SAMPLE_TIME_MS: 2000,
-  PROBE_NETWORK_TIMEOUT_MS: 2000 * 1.5,
-  PROBE_SAMPLE_START_DELAY_TIME_MS: 0,
-  ONVIF_DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
-  NOT_FOUND_STRING: 'unknown'
-}
 ```

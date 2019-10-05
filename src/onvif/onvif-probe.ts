@@ -1,22 +1,22 @@
-import { wsProbe, IWsResponse } from '../ws-discovery/ws-probe'
-import { ISocketStream } from '../core/socket-stream'
-import { reader } from 'typescript-monads'
-import { IProbeConfig } from '../config/config.interface'
-import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { IOnvifDevice } from './device'
 import { xmlToOnvifDevice } from './parse'
+import { wsProbe } from '../ws-discovery/ws-probe'
+import { Observable } from 'rxjs'
+import { IWsResponseModel, IWsProbeConfig } from '../ws-discovery/ws-probe.interfaces'
 
-export interface IOnvifProbeResponse extends IWsResponse {
+export interface IOnvifProbeResponseModel extends IWsResponseModel {
   readonly device: IOnvifDevice
 }
-export type IOnvifProbeResponses = readonly IOnvifProbeResponse[]
+export type IOnvifProbeResponseModels = readonly IOnvifProbeResponseModel[]
+export type IOnvifProbeResponse = Observable<IOnvifProbeResponseModels>
 
-export const onvifProbe = (ss: ISocketStream) => 
-  reader<IProbeConfig, Observable<IOnvifProbeResponses>>(cfg => 
-    wsProbe(ss).map(res => res.pipe(map(a => a.map(b => {
-      return {
-        ...b,
-        device: xmlToOnvifDevice(b.doc)()
-      }
-    })))).run(cfg))
+export const onvifProbe =
+  (config?: Partial<IWsProbeConfig>): IOnvifProbeResponse =>
+    wsProbe(config)
+      .pipe(map(res => res.map(a => {
+        return {
+          ...a,
+          device: xmlToOnvifDevice(a.doc)()
+        }
+      })))

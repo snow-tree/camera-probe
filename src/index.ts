@@ -1,17 +1,15 @@
-import { onvifProbe } from './onvif/onvif-probe'
-import { initSocketStream } from './core/probe'
-import { DEFAULT_CONFIG } from './config/config.default'
+
 import { map, shareReplay } from 'rxjs/operators'
+import { onvifProbe } from './onvif/onvif-probe'
 
-export * from './config/config.interface'
+export * from './onvif/device'
 
-export const probe = initSocketStream.flatMap(onvifProbe)
-export const probe$ = probe.run(DEFAULT_CONFIG).pipe(shareReplay(1))
-export const devices$ = probe$.pipe(map(a => a.map(b => b.device)))
-export const responses$ = probe$.pipe(map(a => a.map(b => b.raw)))
+export const onvifProbe$ = onvifProbe().pipe(shareReplay(1))
+export const onvifDevices$ = onvifProbe$.pipe(map(a => a.map(b => b.device)))
+export const onvifResponses$ = onvifProbe$.pipe(map(a => a.map(b => b.raw)))
 
 export const cli = () => {
-  return devices$
+  return onvifDevices$
     .subscribe(res => {
       console.clear()
       console.log('Camera Probe')
@@ -22,7 +20,7 @@ export const cli = () => {
             Model: device.hardware,
             IP: device.ip,
             URN: device.urn,
-            Endpoiint: device.deviceServiceUri
+            Endpoint: device.deviceServiceUri
           }
         }))
     })
