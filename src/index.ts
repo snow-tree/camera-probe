@@ -8,14 +8,13 @@ export * from './onvif/device'
 const end = new Subject()
 const end$ = end.asObservable()
 
-export const onvifProbe$ = onvifProbe()(end$).pipe(shareReplay(1))
-export const onvifDevices$ = onvifProbe$.pipe(map(a => a.map(b => b.device)))
-export const onvifResponses$ = onvifProbe$.pipe(map(a => a.map(b => b.raw)))
-
 export const terminateProbe = () => end.next()
+export const onvifProbe$ = () => onvifProbe()(end$).pipe(shareReplay(1))
+export const onvifDevices$ = () => onvifProbe$().pipe(map(a => a.map(b => b.device)))
+export const onvifResponses$ = () => onvifProbe$().pipe(map(a => a.map(b => b.raw)))
 
 export const cli = () => {
-  return onvifDevices$
+  return onvifDevices$()
     .subscribe(res => {
       console.clear()
       console.log('Camera Probe')
