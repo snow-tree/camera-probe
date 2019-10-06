@@ -1,5 +1,6 @@
 import { createSocket } from 'dgram'
 import { upnpProbe } from './upnp-probe'
+import { Subject } from 'rxjs'
 
 const initTestServer = (port: number) => {
   const server = createSocket('udp4')
@@ -12,8 +13,9 @@ const initTestServer = (port: number) => {
 describe.skip('upnp probe', () => {
   it.skip('ddddd', done => {
     const port = 1900
+    const end = new Subject()
 
-    upnpProbe({ PORTS: [port] })
+    upnpProbe({ PORTS: [port] })(end)
       .subscribe(res => {
         console.log(res)
       })
