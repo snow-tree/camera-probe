@@ -12,8 +12,8 @@ export type IOnvifProbeResponseModels = readonly IOnvifProbeResponseModel[]
 export type IOnvifProbeResponse = Observable<IOnvifProbeResponseModels>
 
 export const onvifProbe =
-  (config?: Partial<IWsProbeConfig>): IOnvifProbeResponse =>
-    wsProbe(config)
+  (config?: Partial<IWsProbeConfig>) => (until: Observable<any>): IOnvifProbeResponse =>
+    wsProbe(config)(until)
       .pipe(map(res => res.map(a => {
         return {
           ...a,

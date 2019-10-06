@@ -1,12 +1,18 @@
 
 import { map, shareReplay } from 'rxjs/operators'
 import { onvifProbe } from './onvif/onvif-probe'
+import { Subject } from 'rxjs'
 
 export * from './onvif/device'
 
-export const onvifProbe$ = onvifProbe().pipe(shareReplay(1))
+const end = new Subject()
+const end$ = end.asObservable()
+
+export const onvifProbe$ = onvifProbe()(end$).pipe(shareReplay(1))
 export const onvifDevices$ = onvifProbe$.pipe(map(a => a.map(b => b.device)))
 export const onvifResponses$ = onvifProbe$.pipe(map(a => a.map(b => b.raw)))
+
+export const terminateProbe = () => end.next()
 
 export const cli = () => {
   return onvifDevices$
@@ -25,7 +31,6 @@ export const cli = () => {
         }))
     })
 }
-
 // interface IReponse {
 //   devices: [
 //     {
