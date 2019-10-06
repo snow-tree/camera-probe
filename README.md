@@ -56,9 +56,13 @@ $ camera-probe
 
 ## Programmatic Usage
 ```js
-import { onvifDevices$ } from 'camera-probe'
+import { onvifDevices$, terminateProbe } from 'camera-probe'
 
 onvifDevices$.subscribe(console.log)
+
+// be sure to close the socket connection when complete with your query
+// This is a tad awkward until a better solution to stopping the inner observables is achieved.
+terminateProbe()
 
 // results
 [ { name: 'Amcrest',
