@@ -58,7 +58,7 @@ $ camera-probe
 ```js
 import { onvifDevices$, terminateProbe } from 'camera-probe'
 
-onvifDevices$.subscribe(console.log)
+onvifDevices$().subscribe(console.log)
 
 // be sure to close the socket connection when complete with your query
 // This is a tad awkward until a better solution to stopping the inner observables is achieved.
