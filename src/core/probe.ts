@@ -66,14 +66,11 @@ export const probe =
             toArrayOfValues,
             flattenDocumentStrings,
             takeUntil(internalLimit)
-          ).subscribe(msg => obs.next(msg), undefined, () => {
-            setTimeout(() => {
-              socket.close()
-            }, 1000)
-          })
+          ).subscribe(msg => obs.next(msg))
 
           return function unsubscribe() {
             internalLimit.next()
             internalLimit.complete()
+            socket.close()
           }
         })

@@ -1,10 +1,10 @@
 
-import { map, shareReplay } from 'rxjs/operators'
+import { map, share } from 'rxjs/operators'
 import { onvifProbe } from './onvif/onvif-probe'
 
 export * from './onvif/device'
 
-export const onvifProbe$ = () => onvifProbe().pipe(shareReplay(1))
+export const onvifProbe$ = () => onvifProbe().pipe(share())
 export const onvifDevices$ = () => onvifProbe$().pipe(map(a => a.map(b => b.device)))
 export const onvifResponses$ = () => onvifProbe$().pipe(map(a => a.map(b => b.raw)))
 
