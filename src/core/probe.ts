@@ -1,6 +1,6 @@
 import { createSocket, RemoteInfo } from 'dgram'
 import { Strings, Numbers, IProbeConfig, DEFAULT_PROBE_CONFIG } from './interfaces'
-import { Observable, Observer, fromEvent, timer } from 'rxjs'
+import { Observable, Observer, fromEvent, timer, Subject } from 'rxjs'
 import { shareReplay, map, distinctUntilChanged, mapTo, takeUntil, scan } from 'rxjs/operators'
 
 type IMessage = readonly [Buffer, RemoteInfo]
@@ -41,19 +41,19 @@ export const flattenBuffersWithInfo =
 
 export const probe =
   (config?: Partial<IProbeConfig>) =>
-    (messages: Strings) =>
-      (until: Observable<any>): Observable<Strings> =>
+    (messages: Strings): Observable<Strings> =>
         Observable.create((obs: Observer<Strings>) => {
           const cfg = { ...DEFAULT_PROBE_CONFIG, ...(config || {}) }
           const socket = createSocket({ type: 'udp4' })
           const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
+          const internalLimit = new Subject()
           
           socket.on('err', err => obs.error(err))
           socket.on('close', () => obs.complete())
           
           timer(0, cfg.PROBE_REQUEST_SAMPLE_RATE_MS).pipe(
             mapTo(flattenBuffersWithInfo(cfg.PORTS)(cfg.MULTICAST_ADDRESS)(messages.map(mapStringToBuffer))),
-            takeUntil(until))
+            takeUntil(internalLimit))
             .subscribe(bfrPorts => {
               bfrPorts.forEach(mdl => socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
             })
@@ -65,10 +65,12 @@ export const probe =
             distinctUntilObjectChanged,
             toArrayOfValues,
             flattenDocumentStrings,
-            takeUntil(until)
-          ).subscribe(msg => obs.next(msg), undefined, () => {
-            setTimeout(() => {
-              socket.close()
-            }, 1000)
-          })
+            takeUntil(internalLimit)
+          ).subscribe(msg => obs.next(msg))
+
+          return function unsubscribe() {
+            internalLimit.next()
+            internalLimit.complete()
+            socket.close()
+          }
         })

@@ -56,13 +56,17 @@ $ camera-probe
 
 ## Programmatic Usage
 ```js
-import { onvifDevices$, terminateProbe } from 'camera-probe'
+import { onvifDevices$ } from 'camera-probe'
+import { takeUntil } from 'rxjs/operators'
 
-onvifDevices$().subscribe(console.log)
+const subscription = onvifDevices$().subscribe(console.log)
 
 // be sure to close the socket connection when complete with your query
-// This is a tad awkward until a better solution to stopping the inner observables is achieved.
-terminateProbe()
+// by unsubscribing from the observable.
+subscription.unsubscribe()
+
+// or using an rxjs operator like take
+onvifDevices$().pipe(takeUntil(someObservaleFires)).subscribe(console.log)
 
 // results
 [ { name: 'Amcrest',

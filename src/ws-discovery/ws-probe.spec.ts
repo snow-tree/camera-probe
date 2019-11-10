@@ -29,7 +29,7 @@ describe('ws probe', () => {
     const end$ = end.asObservable()
 
     initTestServer(port)
-    wsProbe(config(port))(end$)
+    wsProbe(config(port))
       .subscribe(res => {
         const res1 = res[0]
         expect(res.length).toEqual(1)
