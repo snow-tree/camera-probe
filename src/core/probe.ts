@@ -66,7 +66,7 @@ export const probe =
             toArrayOfValues,
             flattenDocumentStrings,
             takeUntil(internalLimit)
-          ).subscribe(msg => obs.next(msg))
+          ).subscribe(msg => obs.next(msg), err => obs.next(err))
 
           return function unsubscribe() {
             internalLimit.next()
