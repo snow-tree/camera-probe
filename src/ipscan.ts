@@ -34,6 +34,7 @@ export const ipscan =
         flatMap(urls => forkJoin(
           urls.map(url => http.post(url, {
             headers: { 'Content-Type': 'application/soap+xml; charset=utf-8;' },
+            family: 4, // https://github.com/nodejs/node/issues/5436#issuecomment-189600282
             body: '<Envelope xmlns="http://www.w3.org/2003/05/soap-envelope"><Body xmlns:xsd="http://www.w3.org/2001/XMLSchema"><GetSystemDateAndTime xmlns="http://www.onvif.org/ver10/device/wsdl"/></Body></Envelope>'
           }).pipe(
             map(res => res.response.statusCode === 200
