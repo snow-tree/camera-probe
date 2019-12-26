@@ -48,19 +48,19 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.11",
+    "@types/jest": "^24.0.24",
+    "@types/node": "^13.1.0",
     "@types/xmldom": "^0.1.29",
     "jest": "^24.9.0",
-    "rollup": "^1.23.1",
+    "rollup": "^1.27.14",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-typescript2": "^0.24.3",
-    "semantic-release": "^15.13.24",
-    "ts-jest": "^24.1.0",
-    "ts-node": "^8.4.1",
-    "tslint": "^5.20.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "semantic-release": "^15.14.0",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
     "tslint-immutable": "^6.0.1",
-    "typescript": "^3.6.3"
+    "typescript": "^3.7.4"
   },
   "jest": {
     "preset": "ts-jest"
