@@ -17,4 +17,5 @@ export const DEFAULT_WS_PROBE_CONFIG = {
   DEVICES: ['NetworkVideoTransmitter', 'Device', 'NetworkVideoDisplay'],
   PARSER: XML_PARSER_FN,
   RESULT_DEDUPE_FN: wsDiscoveryParseToDict(XML_PARSER_FN),
+  SOCKET_PROTOCOL: 'udp4'
 }

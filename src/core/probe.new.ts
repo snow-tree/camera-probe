@@ -56,7 +56,7 @@ export class UdpProbe {
   }
 
   private mapStrToDictionary(mapFn: (msg: TimestampMessages) => StringDictionary) {
-    return function dd(source: Observable<TimestampMessages>) {
+    return function innerMapStrToDictionary(source: Observable<TimestampMessages>) {
       return source.pipe(map(mapFn))
     }
   }
@@ -88,7 +88,7 @@ export class UdpProbe {
         this.mapStrToDictionary(this.dedupeFn),
         this.distinctUntilObjectChanged,
         this.toArrayOfValues,
-        this.flattenDocumentStrings,
+        this.flattenDocumentStrings.bind(this),
         takeUntil(internalLimit)
       ).subscribe(msg => obs.next(msg), err => obs.next(err))
 

@@ -22,6 +22,7 @@ export const wsProbe =
       cfg.PORTS)
       .start(mapDevicesToPayloads(cfg.DEVICES))
       .pipe(map(b => {
+        console.log(b)
         return b.map(raw => {
           return {
             raw,
