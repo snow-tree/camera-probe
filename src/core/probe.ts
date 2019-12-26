@@ -1,12 +1,9 @@
-import { createSocket, RemoteInfo } from 'dgram'
-import { Strings, Numbers, IProbeConfig, DEFAULT_PROBE_CONFIG } from './interfaces'
-import { Observable, Observer, fromEvent, timer, Subject } from 'rxjs'
+import { Strings, Numbers, IProbeConfig, DEFAULT_PROBE_CONFIG, TimestampedMessage, TimestampMessages, StringDictionary } from './interfaces'
 import { shareReplay, map, distinctUntilChanged, mapTo, takeUntil, scan } from 'rxjs/operators'
+import { Observable, Observer, fromEvent, timer, Subject } from 'rxjs'
+import { createSocket, RemoteInfo } from 'dgram'
 
 type IMessage = readonly [Buffer, RemoteInfo]
-type TimestampMessages = readonly TimestampedMessage[]
-type StringDictionary = { readonly [key: string]: string }
-interface TimestampedMessage { readonly msg: string, readonly ts: number }
 interface BufferPort { readonly buffer: Buffer, readonly port: number, readonly address: string }
 
 const mapStringToBuffer = (str: string) => Buffer.from(str, 'utf8')
@@ -42,35 +39,35 @@ export const flattenBuffersWithInfo =
 export const probe =
   (config?: Partial<IProbeConfig>) =>
     (messages: Strings): Observable<Strings> =>
-        Observable.create((obs: Observer<Strings>) => {
-          const cfg = { ...DEFAULT_PROBE_CONFIG, ...(config || {}) }
-          const socket = createSocket({ type: 'udp4' })
-          const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
-          const internalLimit = new Subject()
-          
-          socket.on('err', err => obs.error(err))
-          socket.on('close', () => obs.complete())
-          
-          timer(0, cfg.PROBE_REQUEST_SAMPLE_RATE_MS).pipe(
-            mapTo(flattenBuffersWithInfo(cfg.PORTS)(cfg.MULTICAST_ADDRESS)(messages.map(mapStringToBuffer))),
-            takeUntil(internalLimit))
-            .subscribe(bfrPorts => {
-              bfrPorts.forEach(mdl => socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
-            })
+      Observable.create((obs: Observer<Strings>) => {
+        const cfg = { ...DEFAULT_PROBE_CONFIG, ...(config || {}) }
+        const socket = createSocket({ type: 'udp4' })
+        const socketMessages$ = fromEvent<IMessage>(socket, 'message').pipe(map(a => a[0]), shareReplay(1))
+        const internalLimit = new Subject()
 
-          socketMessages$.pipe(
-            timestamp,
-            accumulateFreshMessages(cfg.PROBE_RESPONSE_FALLOUT_MS),
-            mapStrToDictionary(cfg.RESULT_DEDUPE_FN),
-            distinctUntilObjectChanged,
-            toArrayOfValues,
-            flattenDocumentStrings,
-            takeUntil(internalLimit)
-          ).subscribe(msg => obs.next(msg), err => obs.next(err))
+        socket.on('err', err => obs.error(err))
+        socket.on('close', () => obs.complete())
 
-          return function unsubscribe() {
-            internalLimit.next()
-            internalLimit.complete()
-            socket.close()
-          }
-        })
+        timer(0, cfg.PROBE_REQUEST_SAMPLE_RATE_MS).pipe(
+          mapTo(flattenBuffersWithInfo(cfg.PORTS)(cfg.MULTICAST_ADDRESS)(messages.map(mapStringToBuffer))),
+          takeUntil(internalLimit))
+          .subscribe(bfrPorts => {
+            bfrPorts.forEach(mdl => socket.send(mdl.buffer, 0, mdl.buffer.length, mdl.port, mdl.address))
+          })
+
+        socketMessages$.pipe(
+          timestamp,
+          accumulateFreshMessages(cfg.PROBE_RESPONSE_FALLOUT_MS),
+          mapStrToDictionary(cfg.RESULT_DEDUPE_FN),
+          distinctUntilObjectChanged,
+          toArrayOfValues,
+          flattenDocumentStrings,
+          takeUntil(internalLimit)
+        ).subscribe(msg => obs.next(msg), err => obs.next(err))
+
+        return function unsubscribe() {
+          internalLimit.next()
+          internalLimit.complete()
+          socket.close()
+        }
+      })

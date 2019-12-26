@@ -42,7 +42,9 @@
   },
   "dependencies": {
     "@akanass/rx-http-request": "^3.3.0",
+    "injection-js": "^2.2.2",
     "ping-rx": "^1.0.0",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.3",
     "typescript-monads": "^3.13.0",
     "xmldom": "^0.1.27"
@@ -63,7 +65,8 @@
     "typescript": "^3.7.4"
   },
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "setupFiles": ["./jest-setup-file.ts"]
   },
   "release": {
     "branch": "master",

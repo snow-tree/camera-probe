@@ -1,4 +1,5 @@
 
+import 'reflect-metadata'
 import { map, share } from 'rxjs/operators'
 import { onvifProbe } from './onvif/onvif-probe'
 
