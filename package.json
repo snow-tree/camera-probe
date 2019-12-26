@@ -45,7 +45,7 @@
     "ping-rx": "^1.0.0",
     "rxjs": "^6.5.3",
     "typescript-monads": "^3.13.0",
-    "xmldom": "^0.2.1"
+    "xmldom": "^0.1.27"
   },
   "devDependencies": {
     "@types/jest": "^24.0.24",
