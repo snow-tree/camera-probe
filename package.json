@@ -32,6 +32,7 @@
   "bin": {
     "camera-probe": "dist/camera-probe"
   },
+  "files": ["dist"],
   "scripts": {
     "test": "jest",
     "test.watch": "jest --watch",
