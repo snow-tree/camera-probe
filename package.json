@@ -45,11 +45,11 @@
     "ping-rx": "^1.0.0",
     "rxjs": "^6.5.3",
     "typescript-monads": "^3.13.0",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.2.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.24",
-    "@types/node": "^13.1.0",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.1",
     "@types/xmldom": "^0.1.29",
     "jest": "^24.9.0",
     "rollup": "^1.27.14",
