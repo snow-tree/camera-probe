@@ -36,6 +36,9 @@ jobs:
       with:
         registry-url: 'https://npm.pkg.github.com'
         scope: '@snow-tree'
+    - run: npm install
+    - run: npm run rollup
+    - run: npm run cli
     - run: npm version --no-git-tag-version ${{ needs.build.outputs.app_version }}
     - run: npm publish
       env:
