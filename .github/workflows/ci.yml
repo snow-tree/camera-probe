@@ -21,7 +21,7 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
-    - run: echo "::set-output name=app_version::$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
+    - run: echo "$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
     # - uses: actions/setup-node@v2-beta
       # with:
         # registry-url: 'https://npm.pkg.github.com'
