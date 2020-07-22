@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.app_version }}
     needs: [build]
+    steps:
     - uses: actions/setup-node@v2-beta
       with:
         registry-url: 'https://npm.pkg.github.com'
