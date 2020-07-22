@@ -21,3 +21,5 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
+    - run: echo "//npm.pkg.github.com/:_authToken=$GH_TOKEN" >> ~/.npmrc
+    - run: npm publish
