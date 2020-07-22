@@ -25,8 +25,7 @@ jobs:
     # - run: echo "::set-output name=app_version::$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
     - name: Printenv
       run: |
-        echo "MY_ENV_VAR=${MY_ENV_VAR}"
-        printenv
+        echo ${{ env.MY_ENV_VAR }}
     
     # - uses: actions/setup-node@v2-beta
     #   with:
