@@ -24,7 +24,7 @@ jobs:
     - name: set environment variables
       uses: allenevans/set-env@v1.0.0
       with:
-        MY_ENV_VAR: "$(node_modules/.bin/semantic-release -b $(git branch --show-current) -d | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
+        MY_ENV_VAR: '$(node_modules/.bin/semantic-release -b $(git branch --show-current) -d | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)'
     - name: Printenv
       run: |
         echo "MY_ENV_VAR=${MY_ENV_VAR}"
