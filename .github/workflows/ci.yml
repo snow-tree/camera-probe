@@ -13,6 +13,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.get_app_version.outputs.app_version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2-beta
@@ -21,11 +23,18 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
+    - id: get_app_version
+      run: echo "::set-output name=app_version::$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
+   
+  publish_github:
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.app_version }}
+    needs: [build]
     - uses: actions/setup-node@v2-beta
       with:
         registry-url: 'https://npm.pkg.github.com'
         scope: '@snow-tree'
-    - run: npm version --no-git-tag-version $(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)
-      if: $(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - run: npm version --no-git-tag-version ${{ needs.build.outputs.app_version }}
+    - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
