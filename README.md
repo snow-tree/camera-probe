@@ -1,9 +1,6 @@
 <h1 align="center" style="border-bottom: none;">camera-probe</h1>
 <h3 align="center">Realtime scanning and discovery of networked cameras.</h3>
 <p align="center">
-  <a href="https://circleci.com/gh/snow-tree/camera-probe">
-    <img alt="circeci" src="https://circleci.com/gh/snow-tree/camera-probe.svg?style=shield">
-  </a>
   <a href="https://codeclimate.com/github/snow-tree/camera-probe/test_coverage">
     <img src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/test_coverage" />
   </a>
@@ -12,9 +9,6 @@
   </a>
 </p>
 <p align="center">
-  <a href="https://greenkeeper.io">
-    <img alt="greenkeeper" src="https://badges.greenkeeper.io/semantic-release/semantic-release.svg">
-  </a>
   <a href="https://david-dm.org/snow-tree/camera-probe">
     <img alt="greenkeeper" src="https://david-dm.org/snow-tree/camera-probe/status.svg">
   </a>
