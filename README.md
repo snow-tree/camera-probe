@@ -34,13 +34,13 @@
 ## Installation
 This package is designed to be run in Node. For the best developer experience use Typescript.
 ```sh
-$ npm i camera-probe
+$ npm i @snow-tree/camera-probe
 ```
 
 ## CLI Usage
 For CLI usage its easier to install globally like so:
 ```sh
-$ npm i -g camera-probe
+$ npm i -g @snow-tree/camera-probe
 
 // starting listening
 $ camera-probe

@@ -1,17 +1,17 @@
 {
-  "name": "camera-probe",
+  "name": "@snow-tree/camera-probe",
   "version": "0.0.0-development",
-  "description": "Realtime scanning and discovery of networked cameras.",
+  "description": "A realtime camera network device discovery tool.",
   "author": "Patrick Michalina <patrickmichalina@mac.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patrickmichalina/camera-probe.git"
+    "url": "https://github.com/snow-tree/camera-probe"
   },
   "bugs": {
-    "url": "https://github.com/patrickmichalina/camera-probe/issues"
+    "url": "https://github.com/snow-tree/camera-probe/issues"
   },
-  "homepage": "https://github.com/patrickmichalina/camera-probe#readme",
+  "homepage": "https://github.com/snow-tree/camera-probe#readme",
   "keywords": [
     "onvif",
     "camera",
