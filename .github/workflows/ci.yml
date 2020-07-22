@@ -21,12 +21,13 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
-    - run: echo "$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
-    # - uses: actions/setup-node@v2-beta
-      # with:
-        # registry-url: 'https://npm.pkg.github.com'
-        # scope: '@snow-tree'
-    # - run: node_modules/.bin/semantic-release
-    # - run: npm publish
-      # env:
-        # NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - uses: actions/setup-node@v2-beta
+      with:
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@snow-tree'
+    - run: npm version $(node_modules/.bin/semantic-release -b $(git branch --show-current) -d | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)
+      #  if: github.ref == 'refs/heads/master'
+    - run: npm publish
+      #  if: github.ref == 'refs/heads/master'
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
