@@ -23,7 +23,7 @@ jobs:
     # - run: npm run rollup
     # - run: npm run cli 
     # - run: node_modules/.bin/semantic-release
-    - run: node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev
+    - run: node_modules/.bin/semantic-release --dry-run -b pub | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
     - run: echo "::set-env name=MY_ENV_VAR::$(node_modules/.bin/semantic-release --dry-run | perl -ne '/(?<=The next release version is ).*(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*))(?:\.(0|(?:[1-9]\d*)))?(?:\-([\w][\w\.\-_]*))?)+/gi && print $&' | rev | cut -c1- | rev)"
