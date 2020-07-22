@@ -26,3 +26,5 @@ jobs:
         registry-url: 'https://npm.pkg.github.com'
         scope: '@snow-tree'
     - run: node_modules/.bin/semantic-release
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
