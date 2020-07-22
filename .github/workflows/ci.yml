@@ -17,4 +17,3 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
-      if: github.ref != 'refs/heads/master'
