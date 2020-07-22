@@ -37,5 +37,5 @@ jobs:
         scope: '@snow-tree'
     - run: npm version --no-git-tag-version ${{ needs.build.outputs.app_version }}
     - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
