@@ -21,3 +21,10 @@ jobs:
     - run: npm run rollup
     - run: npm run cli
     - run: node_modules/.bin/semantic-release
+    - uses: actions/setup-node@v2-beta
+      with:
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@snow-tree'
+    - run: node_modules/.bin/semantic-release
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}

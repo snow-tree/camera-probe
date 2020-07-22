@@ -72,7 +72,6 @@
     "preset": "ts-jest"
   },
   "release": {
-    "branch": "master",
     "plugins": [
       "@semantic-release/npm",
       "@semantic-release/github",
