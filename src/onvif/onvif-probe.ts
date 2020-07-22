@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators'
 import { IOnvifDevice } from './device'
 import { xmlToOnvifDevice } from './parse'
-import { wsProbe } from '../ws-discovery/ws-probe'
+import { WsDiscoveryClient } from '../ws-discovery/ws-probe'
 import { Observable } from 'rxjs'
 import { IWsResponseModel, IWsProbeConfig } from '../ws-discovery/ws-probe.interfaces'
 
@@ -13,7 +13,8 @@ export type IOnvifProbeResponse = Observable<IOnvifProbeResponseModels>
 
 export const onvifProbe =
   (config?: Partial<IWsProbeConfig>): IOnvifProbeResponse =>
-    wsProbe(config)
+    new WsDiscoveryClient(config)
+      .probe()
       .pipe(map(res => res.map(a => {
         return {
           ...a,
