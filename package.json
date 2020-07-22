@@ -36,7 +36,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit --detectOpenHandles",
     "test.watch": "jest --watch",
     "lint": "tslint -p tsconfig.json",
     "rollup": "rollup -c",
